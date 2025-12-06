@@ -94,6 +94,25 @@ Ensure your AWS region is set to:
 
 ![Build Server](artifacts/4-build-server.png)
 
+## **4.1 Create IAM Role for Build Server EC2**
+
+To allow the backend to access S3 :
+
+
+1. Go to **AWS Console → IAM**: [https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/home](https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/home)
+2. Role
+3. Click **Create role**
+4. Choose **EC2** as the Service or use case →  Next
+
+5. Search and Attach the following policies →  Next
+
+   * `AmazonS3FullAccess`
+6. Name the role: `ci-cd-workshop-build-server-role`
+7. Create role
+
+## **4.2 Attach the IAM Role to Build Server EC2 Instance**
+1. Go to **EC2 → Instances → Select ci-cd-workshop-build-server → Actions → Security → Modify IAM Role → Search and Select `ci-cd-workshop-build-server-role` → Click Update IAM role**
+
 
 ## **5. Connect to the Build Server (EC2 Instance)**
 
@@ -149,7 +168,7 @@ This sets secure permissions required by SSH.
 
 ---
 
-### **Step 5.4 — Connect to the EC2 Instance**
+### **Step 5.4 — Connect to the ci-cd-workshop-build-server EC2 Instance**
 
 1. Open the **EC2 Console**
 2. Select your instance **ci-cd-workshop-build-server**
@@ -175,10 +194,46 @@ yes
 
 ---
 
-### ✅ You are now inside the Build Server.
+### You are now inside the Build Server.
 
 ![SSH into Build Server](artifacts/8-ssh-in-build-server.png)
 
+### **Step 5.5 — Install AWS CLI on Build Server**
+
+Run the following commands on the build server:
+
+# Update packages
+```bash
+sudo apt update -y
+```
+
+```bash
+sudo apt install unzip curl -y
+```
+
+# Download AWS CLI v2
+```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+```
+
+# Unzip
+```bash
+unzip awscliv2.zip
+```
+
+# Install
+```bash
+sudo ./aws/install
+```
+
+# Verify
+```bash
+aws --version
+```
+
+✅ After this, the `aws` command is available and pipelines can use it to deploy the frontend to S3.
+
+---
 
 ## **6. Install Jenkins on the Build Server (EC2 Instance)**
 
@@ -186,7 +241,7 @@ Follow the steps below on your EC2 build server after connecting through CloudSh
 
 ---
 
-## **1. Install Java (Required by Jenkins)**
+### **1. Install Java (Required by Jenkins)**
 
 ```bash
 sudo apt update
@@ -201,7 +256,7 @@ java -version
 
 ---
 
-## **2. Add the Jenkins Repository Key**
+### **2. Add the Jenkins Repository Key**
 
 ```bash
 curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key \
@@ -210,7 +265,7 @@ curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key \
 
 ---
 
-## **3. Add the Jenkins Repository**
+### **3. Add the Jenkins Repository**
 
 ```bash
 echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/" \
@@ -219,7 +274,7 @@ echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkin
 
 ---
 
-## **4. Update apt**
+### **4. Update apt**
 
 ```bash
 sudo apt update
@@ -229,7 +284,7 @@ You should now see entries from **pkg.jenkins.io** in the output.
 
 ---
 
-## **5. Install Jenkins**
+### **5. Install Jenkins**
 
 ```bash
 sudo apt install jenkins -y
@@ -237,7 +292,7 @@ sudo apt install jenkins -y
 
 ---
 
-## **6. Start and Enable Jenkins Service**
+### **6. Start and Enable Jenkins Service**
 
 Start Jenkins:
 
@@ -261,11 +316,7 @@ You should see **active (running)**.
 
 ---
 
-Here is the improved and detailed version of Step 7, written exactly in the workshop style you have been using.
-
----
-
-## **7. Allow Jenkins Port in Security Group**
+### **7. Allow Jenkins Port in Security Group**
 
 Jenkins runs on **port 8080**, so we must allow inbound traffic to this port on the Build Server’s security group.
 
@@ -305,9 +356,10 @@ Follow these steps carefully:
 Your Build Server is now accessible on port **8080**, which is required to open the Jenkins UI.
 
 ![SG 22 & 8080 Rule](artifacts/9-sg-22-8080-rule.png)
+
 ---
 
-## **8. Access Jenkins UI**
+### **8. Access Jenkins UI**
 
 Open your browser and visit:
 
@@ -319,7 +371,7 @@ Replace `<public-ip>` with the public IP of the Build Server EC2 instance.
 
 ---
 
-## **9. Retrieve Initial Admin Password**
+### **9. Retrieve Initial Admin Password**
 
 Run the following command in CloudShell (already connected to your EC2 instance):
 
@@ -333,7 +385,7 @@ Here is **Step 10** written clearly and professionally in the same workshop styl
 
 ---
 
-## **10. Complete Jenkins Initial Setup**
+### **10. Complete Jenkins Initial Setup**
 
 After unlocking Jenkins, you will see the setup wizard. Follow these steps:
 
@@ -358,7 +410,9 @@ You will now be taken to the Jenkins dashboard.
 
 ![Jenkins UI](artifacts/10-jenkins-ui.png)
 
-## **11. Create Infrastructure for 3-Tier App**
+---
+
+## **7. Create Infrastructure for 3-Tier App**
 
 Before we deploy our code, we need to create the **infrastructure** where the app will run. This includes:
 
@@ -459,7 +513,7 @@ We will create **two DynamoDB tables** to store all app data for the workshop:
 
 ---
 
-#### **Steps to Create the Tables**
+### **4️⃣Steps to Create the Tables**
 
 1. Open **AWS Console → DynamoDB**: [https://us-east-1.console.aws.amazon.com/dynamodbv2/home?region=us-east-1#dashboard](https://us-east-1.console.aws.amazon.com/dynamodbv2/home?region=us-east-1#dashboard)
 2. Click **Create table** for the **Assignments Table**:
@@ -478,7 +532,7 @@ We will create **two DynamoDB tables** to store all app data for the workshop:
 
 ---
 
-### **4️⃣ Create IAM Role for EC2**
+### **5 Create IAM Role for EC2**
 
 To allow the backend to access S3 and DynamoDB:
 
@@ -493,9 +547,9 @@ To allow the backend to access S3 and DynamoDB:
    * `AmazonS3FullAccess`
    * `AmazonDynamoDBFullAccess`
 6. Name the role: `ci-cd-workshop-backend-server-role`
-7. Attach the role to your backend EC2 instance →  Create role
+7. Create role
 
-### **4️5 Attach the IAM Role to EC2**
+### **5 Attach the IAM Role to EC2**
 1. Go to **EC2 → Instances → Select ci-cd-workshop-backend-server → Actions → Security → Modify IAM Role → Search and Select `ci-cd-workshop-backend-server-role` → Click Update IAM role**
 
 ---
@@ -504,7 +558,7 @@ To allow the backend to access S3 and DynamoDB:
 
 ---
 
-## **12. Set Up GitHub Repositories and Push Workshop Files**
+## **8. Set Up GitHub Repositories and Push Workshop Files**
 
 In this step, we will **create GitHub repositories**, clone them on the **build server**, copy the prepared workshop files, commit, and push them to GitHub using a **Personal Access Token (PAT)**.
 
@@ -512,7 +566,7 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ---
 
-### **Step 12.1 — Create GitHub Repositories**
+### **1 — Create GitHub Repositories**
 
 1. Open your GitHub account: [https://github.com/](https://github.com/)
 2. Click **New**.
@@ -527,7 +581,7 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ---
 
-### **Step 12.2 — Create GitHub Personal Access Token (PAT)**
+### **2 — Create GitHub Personal Access Token (PAT)**
 
 1. Click your **profile picture → Settings → Developer settings → Personal access tokens → Tokens (classic)**
 2. Click **Generate new token → Generate new token (classic)**
@@ -543,9 +597,10 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 > We will use this token as the password when pushing commits from the build server.
 
 ![Create Github Token](artifacts/12-create-token.png)
+
 ---
 
-### **Step 12.3 — Connect to Build Server**
+### **3 — Connect to Build Server**
 
 1. Open **CloudShell** from AWS Console:
 
@@ -565,7 +620,7 @@ cd ~/ci-cd-workshop
 
 ---
 
-### **Step 12.4 — Configure Git (First Time Only)**
+### **4 — Configure Git (First Time Only)**
 
 ```bash
 git config --global user.name "Your Name"
@@ -577,7 +632,7 @@ git config --global user.email "your-email@example.com"
 
 ---
 
-### **Step 12.5 — Clone the Repositories Using HTTPS**
+### **5 — Clone the Repositories Using HTTPS**
 
 Replace `<your-username>` with your GitHub username:
 
@@ -600,7 +655,7 @@ git clone https://github.com/<your-username>/ci-cd-workshop-backend.git
 
 ---
 
-### **Step 12.6 — Download and Copy Workshop Files**
+### **6 — Download and Copy Workshop Files**
 
 #### **Frontend Files**
 
@@ -609,6 +664,9 @@ cd ~/ci-cd-workshop/ci-cd-workshop-frontend
 
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/index.html
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/frontend_version.json
+wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/Jenkinsfile
+
+
 ```
 
 #### **Backend Files**
@@ -619,11 +677,12 @@ cd ~/ci-cd-workshop/ci-cd-workshop-backend
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/app.py
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/backend_version.txt
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/requirements.txt
+wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/Jenkinsfile
 ```
 
 ---
 
-### **Step 12.7 — Commit and Push Changes**
+### **7 — Commit and Push Changes**
 
 #### **Frontend Repo**
 
@@ -698,7 +757,7 @@ git push origin main
 
 ---
 
-### **Step 12.8 — Verify on GitHub**
+### **8 — Verify on GitHub**
 
 1. Open the repositories in your GitHub account:
 
@@ -713,5 +772,186 @@ git push origin main
 ---
 
 ✅ **Congratulations!** Your workshop files are now versioned in GitHub and ready for Jenkins CI/CD pipelines.
+
+---
+
+## **9. Configure Jenkins Pipelines & Deployment (CI/CD Automation)**
+
+In this step, we will **configure Jenkins** to automatically deploy the **frontend** to S3 and the **backend** to the backend EC2 server whenever code is pushed to GitHub. We will also store the existing EC2 key pair in Jenkins for secure SSH access.
+
+> ⚠️ All commands and steps are performed on the **build server** via CloudShell or SSH.
+
+---
+
+### **1 — Store SSH Key in Jenkins**
+
+We will use the **existing EC2 key pair** `ci-cd-workshop.pem` for backend deployment.
+
+1. Open your **Jenkins Dashboard** in browser:
+
+   ```
+   http://<build-server-public-ip>:8080
+   ```
+2. Go to **Manage Jenkins(Gear Icon in right top corner) → Credentials → System → Global credentials → Add Credentials**.
+3. Open `ci-cd-workshop.pem` in notepad/textpad on your local machine and copy the content
+4. Select:
+
+   * **Kind:** SSH Username with private key
+   * **Scope:** Global
+   * **ID:** `backend-server-ssh`
+   * **Description:** SSH Key for backend-server deployment
+   * **Username:** `ubuntu`
+   * **Private Key:** Enter directly → paste the content of `ci-cd-workshop.pem` you copied
+   
+5. Click **Create**.
+
+✅ Jenkins now has the SSH key to connect to the backend server.
+
+![SSH Jenkins Credentials](artifacts/16-ssh-jenkins-credentials.png)
+
+---
+
+### **2 — Create Jenkins Pipeline for Frontend**
+
+We will create a **frontend pipeline** that deploys the static site to S3 using a **parameterized bucket name**.
+
+1. In Jenkins Dashboard → **New Item**.
+2. Enter **Item Name:** `frontend-deploy`
+3. Select **Pipeline** → Click **OK**.
+4. General → Tick **GitHub project**, Checkbox and add repo URL in Project url.
+5. Triggers → Tick **GitHub hook trigger for GITScm polling** Checkbox
+6. Scroll to **Pipeline section → Definition:** `Pipeline script from SCM`.
+7. Select **Git** → Repository URL:
+
+   ```
+   https://github.com/<your-username>/ci-cd-workshop-frontend.git
+   ```
+8. Branch: `main`
+9. Script Path: `Jenkinsfile`
+10. Save the pipeline.
+
+> **Note:** The frontend `Jenkinsfile` should use a parameter for bucket name, so when triggered via webhook, it automatically deploys to the correct S3 bucket without prompting.
+
+![Frontend Backend Pipeline](artifacts/17-frontend-backend-pipelines.png)
+
+---
+
+### **3 — Create Jenkins Pipeline for Backend**
+
+We will create a **backend pipeline** that deploys the Python Flask app to the backend EC2 server using SSH.
+
+1. In Jenkins Dashboard → **New Item**.
+2. Enter **Item Name:** `backend-deploy`
+3. Select **Pipeline** → Click **OK**.
+4. General → Tick **GitHub project**, Checkbox and add repo URL in Project url.
+5. Triggers → Tick **GitHub hook trigger for GITScm polling** Checkbox
+6. Scroll to **Pipeline section → Definition:** `Pipeline script from SCM`.
+7. Select **Git** → Repository URL:
+
+   ```
+   https://github.com/<your-username>/ci-cd-workshop-backend.git
+   ```
+8. Branch: `main`
+9. Script Path: `Jenkinsfile`
+10. Save the pipeline.
+
+> **Note:** Backend `Jenkinsfile` uses the stored SSH key (`backend-server-ssh`) to connect to backend EC2, setup virtual environment, install requirements, stop old process, and start Flask app.
+
+![Frontend Backend Pipeline](artifacts/17-frontend-backend-pipelines.png)
+
+---
+
+### **4 — Configure GitHub Webhooks**
+
+We will make Jenkins automatically trigger pipelines on **GitHub push**.
+
+Repeat this for both the repos
+
+1. Open **GitHub → Repository → Settings → Webhooks → Add webhook**.
+2. Enter:
+
+   * **Payload URL:**
+
+     ```
+     http://<build-server-public-ip>:8080/github-webhook/
+     ```
+   * **Content type:** `application/json`
+   * **Secret:** leave blank (optional)
+   * **Which events would you like to trigger this webhook?** → **Just the push event**
+3. Click **Add webhook**.
+
+✅ Whenever you push code to the repo, Jenkins will automatically trigger the pipeline.
+
+![Frontend Webhook](artifacts/18.2-frontend-webhook.png)
+![Backend Webhook](artifacts/18.2-backend-webhook.png)
+
+---
+
+### **5 — Test Frontend Pipeline**
+
+1. Make a change to **frontend repo** (e.g., edit `frontend_version.json` and change the version).
+2. Push to GitHub from **build server**:
+
+```bash
+cd ~/ci-cd-workshop/ci-cd-workshop-frontend
+```
+
+```bash
+git add .
+```
+
+```bash
+git commit -m "Test frontend update"
+```
+
+```bash
+git push origin main
+```
+
+3. Open Jenkins → **frontend-deploy pipeline** → check **Builds**.
+4. The first time it will fail, as the "S3_BUCKET" parameter contains the default value.
+Click on Configure → Scroll down to **This project is parameterised** → Change value of **Default Value** from **ci-cd-workshop-frontend-<your-name>** to your bucket name.
+5. Now again make a small change and follow the above steps to add, commit and push
+4. Verify pipeline runs successfully and static site is deployed to S3.
+
+---
+
+### **6 — Test Backend Pipeline**
+
+1. Make a change to **backend repo** (e.g., edit `backend_version.txt`).
+2. Push to GitHub from **build server**:
+
+```bash
+cd ~/ci-cd-workshop/ci-cd-workshop-backend
+```
+
+```bash
+git add .
+```
+
+```bash
+git commit -m "Test backend update"
+```
+
+```bash
+git push origin main
+```
+
+3. Open Jenkins → **backend-deploy pipeline** → check **Build History**.
+4. Verify pipeline runs successfully and backend app is deployed to the backend EC2 server.
+   You can test backend by opening:
+
+```
+http://<backend-server-public-ip>:5000
+```
+
+---
+
+### **Congratulations!**
+
+* Frontend and backend are now fully automated using **Jenkins pipelines**.
+* **GitHub webhooks** trigger CI/CD whenever you push new code.
+* Backend deploys via **SSH** using the existing EC2 key pair.
+* Frontend deploys to **S3 bucket** using the parameterized Jenkinsfile.
 
 ---
