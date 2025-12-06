@@ -697,6 +697,7 @@ echo "Your Website URL:"
 echo "http://$BUCKET_NAME.s3-website-$REGION.amazonaws.com"
 ```
 
+</details>
 
 ### **2️⃣ Create Backend EC2 Instance**
 
