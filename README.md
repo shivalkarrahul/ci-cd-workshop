@@ -202,7 +202,6 @@ yes
 
 Run the following commands on the build server:
 
-# Update packages
 ```bash
 sudo apt update -y
 ```
@@ -211,22 +210,18 @@ sudo apt update -y
 sudo apt install unzip curl -y
 ```
 
-# Download AWS CLI v2
 ```bash
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 ```
 
-# Unzip
 ```bash
 unzip awscliv2.zip
 ```
 
-# Install
 ```bash
 sudo ./aws/install
 ```
 
-# Verify
 ```bash
 aws --version
 ```
