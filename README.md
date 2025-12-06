@@ -501,3 +501,217 @@ To allow the backend to access S3 and DynamoDB:
 ---
 
 ✅ All three tiers of our app are now ready!
+
+---
+
+## **12. Set Up GitHub Repositories and Push Workshop Files**
+
+In this step, we will **create GitHub repositories**, clone them on the **build server**, copy the prepared workshop files, commit, and push them to GitHub using a **Personal Access Token (PAT)**.
+
+> ⚠️ All commands should be run **on the build server** using CloudShell or SSH.
+
+---
+
+### **Step 12.1 — Create GitHub Repositories**
+
+1. Open your GitHub account: [https://github.com/](https://github.com/)
+2. Click **New**.
+3. Create **two repositories**:
+
+   * `ci-cd-workshop-frontend`
+   * `ci-cd-workshop-backend`
+4. Leave all options default (Public, No README, No .gitignore, No license).
+5. Click **Create repository**.
+
+![Create Github Repos](artifacts/11-create-new-repo.png) 
+
+---
+
+### **Step 12.2 — Create GitHub Personal Access Token (PAT)**
+
+1. Click your **profile picture → Settings → Developer settings → Personal access tokens → Tokens (classic)**
+2. Click **Generate new token → Generate new token (classic)**
+3. Give a **note/name**: `ci-cd-workshop-token`
+4. Select **expiration** (e.g., 90 days)
+5. Under **Scopes**, select:
+
+   * `repo` → Full control of private and public repositories
+   * `workflow` → Optional for Jenkins triggers (future step)
+6. Click **Generate token**
+7. Copy the token somewhere safe, do not share with anyone. **You won’t be able to see it again**.
+
+> We will use this token as the password when pushing commits from the build server.
+
+![Create Github Token](artifacts/12-create-token.png)
+---
+
+### **Step 12.3 — Connect to Build Server**
+
+1. Open **CloudShell** from AWS Console:
+
+```bash
+ssh -i ci-cd-workshop.pem ubuntu@<BUILD-SERVER-PUBLIC-IP>
+```
+
+2. Navigate to a working directory:
+
+```bash
+mkdir ~/ci-cd-workshop
+```
+
+```bash
+cd ~/ci-cd-workshop
+```
+
+---
+
+### **Step 12.4 — Configure Git (First Time Only)**
+
+```bash
+git config --global user.name "Your Name"
+```
+
+```bash
+git config --global user.email "your-email@example.com"
+```
+
+---
+
+### **Step 12.5 — Clone the Repositories Using HTTPS**
+
+Replace `<your-username>` with your GitHub username:
+
+```bash
+# Frontend
+git clone https://github.com/<your-username>/ci-cd-workshop-frontend.git
+```
+
+```bash
+# Backend
+git clone https://github.com/<your-username>/ci-cd-workshop-backend.git
+```
+
+> When prompted for username and password, **use your GitHub username** and **Personal Access Token** as password.
+
+![Clone Github Repos](artifacts/13-clone-repo.png)
+
+![Clone Output](artifacts/14-clone-output.png)
+
+
+---
+
+### **Step 12.6 — Download and Copy Workshop Files**
+
+#### **Frontend Files**
+
+```bash
+cd ~/ci-cd-workshop/ci-cd-workshop-frontend
+
+wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/index.html
+wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/frontend_version.json
+```
+
+#### **Backend Files**
+
+```bash
+cd ~/ci-cd-workshop/ci-cd-workshop-backend
+
+wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/app.py
+wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/backend_version.txt
+wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/requirements.txt
+```
+
+---
+
+### **Step 12.7 — Commit and Push Changes**
+
+#### **Frontend Repo**
+
+```bash
+cd ~/ci-cd-workshop/ci-cd-workshop-frontend
+```
+
+```bash
+ls -l
+```
+
+```bash
+git status
+```
+
+```bash
+git add .
+```
+
+```bash
+git status
+```
+
+```bash
+git commit -m "Initial commit: workshop frontend files"
+```
+
+```bash
+git push origin main
+```
+
+![Push to Fronend Repo](artifacts/15.1-push-to-frontend-repo.png)
+
+#### **Backend Repo**
+
+```bash
+cd ~/ci-cd-workshop/ci-cd-workshop-backend
+```
+
+```bash
+ls -l
+```
+
+```bash
+git status
+```
+
+```bash
+git add .
+```
+
+```bash
+git status
+```
+
+```bash
+git commit -m "Initial commit: workshop backend files"
+```
+
+```bash
+git push origin main
+```
+
+![Push to Backend Repo](artifacts/15.1-push-to-backend-repo.png)
+
+
+
+> During `git push`, Git will prompt for credentials:
+>
+> * **Username:** GitHub username
+> * **Password:** Personal Access Token (PAT) created earlier
+
+---
+
+### **Step 12.8 — Verify on GitHub**
+
+1. Open the repositories in your GitHub account:
+
+   * `https://github.com/<your-username>/ci-cd-workshop-frontend`
+![Changes in Fronend Repo](artifacts/15.2-changes-in-frontend-repo.png)
+
+   * `https://github.com/<your-username>/ci-cd-workshop-backend`
+![Changes in Backend Repo](artifacts/15.2-changes-in-backend-repo.png)
+
+2. You should see all your files and initial commits.
+
+---
+
+✅ **Congratulations!** Your workshop files are now versioned in GitHub and ready for Jenkins CI/CD pipelines.
+
+---
