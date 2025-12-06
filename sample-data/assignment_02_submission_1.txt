@@ -1,0 +1,16 @@
+
+Student: Rahul
+Assignment: Static Website Deployment
+
+1. S3 Bucket: ci-cd-frontend-rahul
+2. HTML:
+<html>
+  <body>
+    <h1>CI/CD Workshop - Rahul</h1>
+    <p>Frontend Deployment Demo</p>
+  </body>
+</html>
+3. S3 URL: http://ci-cd-frontend-rahul.s3-website-us-east-1.amazonaws.com
+4. Pipeline: Jenkins uploads index.html to S3 automatically after git commit.
+
+Screenshots: S3 console + browser preview

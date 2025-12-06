@@ -1,0 +1,16 @@
+Class: CI/CD Workshop
+Subject: Linux & Jenkins
+Assignment: Jenkins Setup & Git Automation
+
+Instructions:
+1. Launch an Ubuntu EC2 instance.
+2. Install Jenkins and verify it's running on port 8080.
+3. Install Git and clone your workshop repository.
+4. Capture the Jenkins initial admin password.
+5. Submit a bash script used and screenshots of Jenkins UI.
+
+Questions:
+1. Which EC2 instance type did you choose and why?
+2. Show the bash script used to install Jenkins and Git.
+3. Provide the Jenkins initial admin password.
+4. Explain how you could automate this setup using a Jenkins pipeline.

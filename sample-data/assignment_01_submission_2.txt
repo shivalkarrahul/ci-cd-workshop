@@ -1,0 +1,17 @@
+Student: Riya
+Assignment: Jenkins Setup & Git Automation
+
+1. EC2 Instance: t2.micro (free tier, sufficient for demo)
+2. Bash Script:
+#!/bin/bash
+sudo apt update && sudo apt install -y git openjdk-11-jdk
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+echo "deb https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list
+sudo apt update
+sudo apt install -y jenkins
+sudo systemctl enable --now jenkins
+git clone https://github.com/shivalkarrahul/ci-cd-workshop.git
+3. Initial admin password obtained from /var/lib/jenkins/secrets/initialAdminPassword
+4. CI/CD automation: Jenkins job triggers EC2 setup script and clones repo automatically.
+
+Screenshots attached.

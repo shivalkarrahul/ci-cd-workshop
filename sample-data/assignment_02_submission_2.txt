@@ -1,0 +1,15 @@
+Student: Riya
+Assignment: Static Website Deployment
+
+1. S3 Bucket: ci-cd-frontend-riya
+2. HTML:
+<html>
+  <body>
+    <h1>CI/CD Workshop - Riya</h1>
+    <p>Static site demo</p>
+  </body>
+</html>
+3. URL: http://ci-cd-frontend-riya.s3-website-us-east-1.amazonaws.com
+4. Jenkins pipeline uploads the HTML file on commit.
+
+Screenshots included.

@@ -1,0 +1,18 @@
+Student: Rahul
+Assignment: Jenkins Setup & Git Automation
+
+1. EC2 Instance: t2.medium (enough memory for Jenkins and plugins)
+2. Bash Script:
+#!/bin/bash
+sudo apt update
+sudo apt install -y openjdk-11-jdk git
+wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+sudo apt update
+sudo apt install -y jenkins
+sudo systemctl start jenkins
+git clone https://github.com/shivalkarrahul/ci-cd-workshop.git
+3. Jenkins initial password saved at /var/lib/jenkins/secrets/initialAdminPassword
+4. Jenkins pipeline could automate EC2 creation, package installation, and repo cloning.
+
+Screenshots: Jenkins dashboard, terminal output

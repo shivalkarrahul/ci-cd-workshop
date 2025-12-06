@@ -1,0 +1,15 @@
+Class: CI/CD Workshop
+Subject: AWS & CI/CD
+Assignment: Static Website Deployment
+
+Instructions:
+1. Create an S3 bucket for static website hosting.
+2. Upload a simple HTML page (index.html) with your name and workshop details.
+3. Enable static website hosting and make it public.
+4. Submit the HTML file and screenshot of S3 hosting.
+
+Questions:
+1. Name of S3 bucket and region.
+2. HTML file content.
+3. URL of hosted website.
+4. How could you integrate S3 deployment in a Jenkins pipeline?

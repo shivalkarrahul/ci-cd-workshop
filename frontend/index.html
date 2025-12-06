@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Assignment Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Header + Backend Version -->
+    <h1 class="text-4xl font-bold mb-2 text-center text-blue-700">📘 Assignment Tracker</h1>
+    <p class="text-sm text-gray-500 text-center mb-6">
+      Backend Version: <span id="backend_version">loading...</span> |
+      Frontend Version: <span id="frontend_version">loading...</span>
+    </p>
+
+    <!-- Teacher Section -->
+    <div class="bg-white p-6 rounded-xl shadow mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Create Assignment (Teacher)</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input id="title" class="input" placeholder="Assignment Title">
+        <input id="teacher_name" class="input" placeholder="Teacher Name">
+        <input id="subject" class="input" placeholder="Subject / Class">
+        <div class="flex flex-col">
+          <label for="due_date" class="mb-1 font-semibold text-gray-700">Due Date</label>
+          <input id="due_date" type="date" class="input">
+        </div>
+      </div>
+
+      <textarea id="description" class="input mt-4 h-24" placeholder="Description"></textarea>
+
+      <button onclick="createAssignment()" 
+              class="btn mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+        Create Assignment
+      </button>
+    </div>
+
+    <!-- Assignment List -->
+    <div class="bg-white p-6 rounded-xl shadow mb-8">
+      <h2 class="text-2xl font-semibold mb-4">All Assignments</h2>
+
+      <table class="min-w-full bg-white border rounded">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="th">Title</th>
+            <th class="th">Subject</th>
+            <th class="th">Due Date</th>
+            <th class="th">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="assignments_table"></tbody>
+      </table>
+    </div>
+
+    <!-- Student Section -->
+    <div class="bg-white p-6 rounded-xl shadow mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Submit Assignment (Student)</h2>
+
+      <select id="assignment_select" class="input"></select>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <input id="student_name" class="input" placeholder="Student Name">
+        <input id="submission_file" type="file" class="input">
+      </div>
+
+      <textarea id="comments" class="input mt-4" placeholder="Comments (optional)"></textarea>
+
+      <button onclick="submitAssignment()" 
+              class="btn mt-4 bg-green-600 hover:bg-green-700 text-white">
+        Submit Assignment
+      </button>
+    </div>
+
+    <!-- Submissions Section -->
+    <div class="bg-white p-6 rounded-xl shadow">
+      <h2 class="text-2xl font-semibold mb-4">Submissions</h2>
+
+      <table class="min-w-full bg-white border rounded">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="th">Student</th>
+            <th class="th">File</th>
+            <th class="th">Comments</th>
+            <th class="th">Submitted</th>
+            <th class="th">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="submissions_table"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:5000";
+
+    const toast = msg =>
+      alert(msg); // simple alert, can be replaced with a fancier toast
+
+    const inputClass = "border p-2 rounded w-full";
+    document.querySelectorAll(".input").forEach(e => e.className = inputClass);
+
+    const thClass = "p-3 text-left border";
+    document.querySelectorAll(".th").forEach(e => e.className = thClass);
+
+    const btnClass = "px-4 py-2 rounded font-semibold";
+    document.querySelectorAll(".btn").forEach(e => e.classList.add(...btnClass.split(" ")));
+
+    // ------------------------
+    // LOAD BACKEND VERSION
+    // ------------------------
+    async function loadBackendVersion() {
+      try {
+        const res = await fetch(`${API_BASE}/backend_version`);
+        const data = await res.json();
+        document.getElementById("backend_version").textContent = data.backend_version;
+      } catch {
+        document.getElementById("backend_version").textContent = "unknown";
+      }
+    }
+
+    async function loadFrontendVersion() {
+    try {
+      const res = await fetch("frontend_version.json");
+      const data = await res.json();
+      document.getElementById("frontend_version").textContent = data.frontend_version;
+    } catch {
+      document.getElementById("frontend_version").textContent = "unknown";
+    }
+    }    
+    
+
+    // ------------------------
+    // CREATE ASSIGNMENT
+    // ------------------------
+    async function createAssignment() {
+      const payload = {
+        title: title.value,
+        teacher_name: teacher_name.value,
+        subject: subject.value,
+        due_date: due_date.value,
+        description: description.value
+      };
+
+      const res = await fetch(`${API_BASE}/create_assignment`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload)
+      });
+
+      toast((await res.json()).message);
+      loadAssignments();
+    }
+
+    // ------------------------
+    // LOAD ASSIGNMENTS
+    // ------------------------
+    async function loadAssignments() {
+      const res = await fetch(`${API_BASE}/get_assignments`);
+      const data = await res.json();
+      const table = document.getElementById("assignments_table");
+      const select = document.getElementById("assignment_select");
+
+      table.innerHTML = "";
+      select.innerHTML = "";
+
+      data.assignments.forEach(a => {
+        table.innerHTML += `
+          <tr class="border-b">
+            <td class="p-3">${a.title}</td>
+            <td class="p-3">${a.subject}</td>
+            <td class="p-3">${a.due_date}</td>
+            <td class="p-3">
+              <button class="text-red-600" onclick="deleteAssignment('${a.assignment_id}')">
+                Delete
+              </button>
+            </td>
+          </tr>
+        `;
+
+        select.innerHTML += `<option value="${a.assignment_id}">${a.title}</option>`;
+      });
+
+      if (select.value) loadSubmissions(select.value);
+    }
+
+    // ------------------------
+    // DELETE ASSIGNMENT
+    // ------------------------
+    async function deleteAssignment(id) {
+      if (!confirm("Delete assignment & ALL submissions?")) return;
+
+      const res = await fetch(`${API_BASE}/delete_assignment/${id}`, {
+        method: "DELETE"
+      });
+
+      toast((await res.json()).message);
+      loadAssignments();
+      document.getElementById("submissions_table").innerHTML = "";
+    }
+
+    // ------------------------
+    // SUBMIT ASSIGNMENT
+    // ------------------------
+    async function submitAssignment() {
+      const fd = new FormData();
+      fd.append("assignment_id", assignment_select.value);
+      fd.append("student_name", student_name.value);
+      fd.append("file", submission_file.files[0]);
+      fd.append("comments", comments.value);
+
+      const res = await fetch(`${API_BASE}/submit_assignment`, {
+        method: "POST",
+        body: fd
+      });
+
+      toast((await res.json()).message);
+      loadSubmissions(assignment_select.value);
+    }
+
+    // ------------------------
+    // LOAD SUBMISSIONS
+    // ------------------------
+    async function loadSubmissions(id) {
+      const res = await fetch(`${API_BASE}/get_submissions/${id}`);
+      const data = await res.json();
+
+      const table = document.getElementById("submissions_table");
+      table.innerHTML = "";
+
+      data.submissions.forEach(s => {
+        table.innerHTML += `
+          <tr class="border-b">
+            <td class="p-3">${s.student_name}</td>
+            <td class="p-3">
+              <a class="text-blue-600 underline" href="https://ci-cd-workshop-frontend-rahul.s3.amazonaws.com/${s.file_name}" target="_blank">View File</a>
+            </td>
+            <td class="p-3">${s.comments}</td>
+            <td class="p-3">${s.submitted_at}</td>
+            <td class="p-3">
+              <button onclick="deleteSubmission('${s.submission_id}')" class="text-red-600">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // ------------------------
+    // DELETE SUBMISSION
+    // ------------------------
+    async function deleteSubmission(id) {
+      if (!confirm("Delete this submission?")) return;
+
+      const res = await fetch(`${API_BASE}/delete_submission/${id}`, {
+        method: "DELETE"
+      });
+
+      toast((await res.json()).message);
+      loadSubmissions(assignment_select.value);
+    }
+
+    // ------------------------
+    // INITIAL LOAD
+    // ------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+      loadBackendVersion();
+      loadFrontendVersion();
+      loadAssignments();
+    });
+
+  </script>
+
+</body>
+</html>

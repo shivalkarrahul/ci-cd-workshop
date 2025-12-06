@@ -1,0 +1,15 @@
+Student: Arpit
+Assignment: Static Website Deployment
+
+1. Bucket: ci-cd-frontend-arpit
+2. HTML:
+<html>
+  <body>
+    <h1>CI/CD Workshop - Arpit</h1>
+    <p>Frontend hosted on S3</p>
+  </body>
+</html>
+3. URL: http://ci-cd-frontend-arpit.s3-website-us-east-1.amazonaws.com
+4. CI/CD pipeline: Automatically deploys changes to S3 after push.
+
+Screenshots attached.
