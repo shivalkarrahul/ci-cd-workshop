@@ -1,0 +1,80 @@
+pipeline {
+    agent any
+
+    environment {
+        PYTHON = "/usr/bin/python3"
+        VENV_DIR = "venv"
+    }
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                echo "Checking out code..."
+                checkout scm
+            }
+        }
+
+        stage('Setup Virtual Environment') {
+            steps {
+                sh '''
+                    echo "Creating virtual environment..."
+                    ${PYTHON} -m venv ${VENV_DIR}
+
+                    echo "Activating virtual environment..."
+                    source ${VENV_DIR}/bin/activate
+
+                    echo "Upgrading pip..."
+                    pip install --upgrade pip
+                '''
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    echo "Installing Python requirements..."
+                    source ${VENV_DIR}/bin/activate
+                    pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Stop Existing Backend') {
+            steps {
+                sh '''
+                    echo "Stopping old backend if running..."
+                    pkill -f app.py || true
+                '''
+            }
+        }
+
+        stage('Start Backend') {
+            steps {
+                sh '''
+                    echo "Starting backend server..."
+                    source ${VENV_DIR}/bin/activate
+                    nohup python3 app.py > backend.log 2>&1 &
+                '''
+            }
+        }
+
+        stage('Read Backend Version') {
+            steps {
+                sh '''
+                    echo "Backend Version:"
+                    cat backend_version.txt || echo "backend_version.txt not found"
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Backend deployed successfully!"
+        }
+        failure {
+            echo "Backend deployment failed ❌"
+        }
+    }
+}
