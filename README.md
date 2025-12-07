@@ -94,104 +94,6 @@ Ensure your AWS region is set to:
 
 ![Build Server](artifacts/4-build-server.png)
 
-### ⚡ AWS CLI (Alternate to AWS Console – Save Some Clicks)
-<details> <summary>Run commands to create/configure the resource via CLI</summary> 
-
-> Run these AWS CLI commands to quickly create and configure the resource without navigating the Console.
-
-```bash
-# ========= VARIABLES =========
-REGION="us-east-1"
-KEY_NAME="ci-cd-workshop"
-SECURITY_GROUP_NAME="ci-cd-workshop-sg"
-INSTANCE_NAME="ci-cd-workshop-build-server"
-INSTANCE_TYPE="t2.medium"
-VOLUME_SIZE=20
-# =============================
-```
-
-```bash
-aws ec2 create-key-pair \
-  --region $REGION \
-  --key-name $KEY_NAME \
-  --query "KeyMaterial" \
-  --output text > ${KEY_NAME}.pem
-```
-
-```bash
-chmod 400 ${KEY_NAME}.pem
-```
-
-```bash
-VPC_ID=$(aws ec2 describe-vpcs \
-  --region $REGION \
-  --filters "Name=isDefault,Values=true" \
-  --query "Vpcs[0].VpcId" \
-  --output text)
-
-echo "VPC_ID = $VPC_ID"
-
-```
-
-```bash
-SG_ID=$(aws ec2 create-security-group \
-  --region $REGION \
-  --group-name $SECURITY_GROUP_NAME \
-  --description "Security group for CI/CD Workshop servers" \
-  --vpc-id $VPC_ID \
-  --query "GroupId" \
-  --output text)
-
-echo "SG_ID = $SG_ID"
-
-```
-
-```bash
-aws ec2 authorize-security-group-ingress \
-  --region $REGION \
-  --group-id $SG_ID \
-  --protocol tcp \
-  --port 22 \
-  --cidr 0.0.0.0/0
-
-```
-
-```bash
-AMI_ID=$(aws ssm get-parameters \
-  --region $REGION \
-  --names /aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id \
-  --query "Parameters[0].Value" \
-  --output text)
-
-echo "AMI_ID = $AMI_ID"
-
-
-```
-
-```bash
-aws ec2 run-instances \
-  --region $REGION \
-  --image-id $AMI_ID \
-  --instance-type $INSTANCE_TYPE \
-  --key-name $KEY_NAME \
-  --security-groups $SECURITY_GROUP_NAME \
-  --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":$VOLUME_SIZE}}]" \
-  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE_NAME}]" \
-  --count 1
-
-```
-
-```bash
-aws ec2 describe-instances \
-  --region $REGION \
-  --filters "Name=tag:Name,Values=$INSTANCE_NAME" \
-  --query "Reservations[0].Instances[0].PublicIpAddress" \
-  --output text
-
-```
-
-</details>
-
 
 ## **4.1 Create IAM Role for Build Server EC2**
 
@@ -211,70 +113,6 @@ To allow the backend to access S3 :
 
 ## **4.2 Attach the IAM Role to Build Server EC2 Instance**
 1. Go to **EC2 → Instances → Select ci-cd-workshop-build-server → Actions → Security → Modify IAM Role → Search and Select `ci-cd-workshop-build-server-role` → Click Update IAM role**
-
-### ⚡ AWS CLI (Alternate to AWS Console – Save Some Clicks)
-<details> <summary>Run commands to create/configure the resource via CLI</summary> 
-
-> Run these AWS CLI commands to quickly create and configure the resource without navigating the Console.
-
-```bash
-Name=ci-cd-workshop-build-server
-```
-
-```bash
-cat > trust-policy.json << 'EOF'
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": { "Service": "ec2.amazonaws.com" },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-```
-
-```bash
-aws iam create-role \
-  --role-name ci-cd-workshop-build-server-role \
-  --assume-role-policy-document file://trust-policy.json
-```
-
-```bash
-aws iam attach-role-policy \
-  --role-name ci-cd-workshop-build-server-role \
-  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
-```
-
-```bash
-aws iam create-instance-profile \
-  --instance-profile-name ci-cd-workshop-build-server-profile
-```
-
-```bash
-aws iam add-role-to-instance-profile \
-  --instance-profile-name ci-cd-workshop-build-server-profile \
-  --role-name ci-cd-workshop-build-server-role
-```
-
-```bash
-INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=ci-cd-workshop-build-server" \
-  --query "Reservations[0].Instances[0].InstanceId" \
-  --output text)
-
-echo "Build Server Instance ID: $INSTANCE_ID"
-```
-
-```bash
-aws ec2 associate-iam-instance-profile \
-  --instance-id $INSTANCE_ID \
-  --iam-instance-profile Name=ci-cd-workshop-build-server-profile
-```
-
-</details>
 
 
 ## **5. Connect to the Build Server (EC2 Instance)**
@@ -628,76 +466,6 @@ Got it! Here’s a **single-step version** that includes bucket creation, static
 ✅ Your frontend S3 bucket is ready to host the static website and is publicly accessible.
 
 ---
-### ⚡ AWS CLI (Alternate to AWS Console – Save Some Clicks)
-<details> <summary>Run commands to create/configure the resource via CLI</summary> 
-
-> Run these AWS CLI commands to quickly create and configure the resource without navigating the Console.
-
-```bash
-YOUR_NAME="rahul-2"                # change this
-REGION="us-east-1"
-
-BUCKET_NAME="ci-cd-workshop-frontend-${YOUR_NAME}"
-echo $BUCKET_NAME
-
-```
-
----
-
-```bash
-aws s3api create-bucket \
-  --bucket $BUCKET_NAME \
-  --region $REGION
-```
-
----
-
-```bash
-aws s3api put-public-access-block \
-  --bucket $BUCKET_NAME \
-  --public-access-block-configuration \
-    "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
-```
-
----
-
-```bash
-aws s3api put-bucket-website \
-  --bucket $BUCKET_NAME \
-  --website-configuration '{
-    "IndexDocument": { "Suffix": "index.html" }
-  }'
-```
-
-```bash
-cat > bucket-policy.json << EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "PublicReadGetObject",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::$BUCKET_NAME/*"
-    }
-  ]
-}
-EOF
-```
-
-```bash
-aws s3api put-bucket-policy \
-  --bucket $BUCKET_NAME \
-  --policy file://bucket-policy.json
-```
-
-```bash
-echo "Your Website URL:"
-echo "http://$BUCKET_NAME.s3-website-$REGION.amazonaws.com"
-```
-
-</details>
 
 ### **2️⃣ Create Backend EC2 Instance**
 
@@ -1187,22 +955,6 @@ http://<backend-server-public-ip>:5000
 
 ## **Pending. Cleanup**
 
-Here you go — **a clean, complete AWS CLI cleanup script** that deletes *everything created* in your workshop.
-
-It safely deletes in the correct dependency order:
-
-1. **EC2 instance**
-2. **Instance profile ↔ role detachment**
-3. **Instance profile**
-4. **IAM role policies**
-5. **IAM role**
-6. **Security group**
-7. **Key pair**
-
----
-
-# ✅ **AWS CLI Cleanup Commands (Delete Everything)**
-
 ### **Step 0 — Variables**
 
 ```bash
@@ -1215,7 +967,7 @@ SG_NAME=ci-cd-workshop-sg
 
 ---
 
-# **1️⃣ Delete EC2 Instance**
+### **1️⃣ Delete EC2 Instance**
 
 ```bash
 INSTANCE_ID=$(aws ec2 describe-instances \
@@ -1231,7 +983,7 @@ aws ec2 wait instance-terminated --instance-ids $INSTANCE_ID
 
 ---
 
-# **2️⃣ Remove IAM Instance Profile From Instance (if attached)**
+### **2️⃣ Remove IAM Instance Profile From Instance (if attached)**
 
 AWS sometimes requires disassociation before deletion.
 
@@ -1244,7 +996,7 @@ aws ec2 disassociate-iam-instance-profile \
 
 ---
 
-# **3️⃣ Detach Role From Instance Profile**
+### **3️⃣ Detach Role From Instance Profile**
 
 ```bash
 aws iam remove-role-from-instance-profile \
@@ -1254,7 +1006,7 @@ aws iam remove-role-from-instance-profile \
 
 ---
 
-# **4️⃣ Delete Instance Profile**
+### **4️⃣ Delete Instance Profile**
 
 ```bash
 aws iam delete-instance-profile \
@@ -1263,7 +1015,7 @@ aws iam delete-instance-profile \
 
 ---
 
-# **5️⃣ Detach Policies From Role**
+### **5️⃣ Detach Policies From Role**
 
 ```bash
 aws iam detach-role-policy \
@@ -1273,7 +1025,7 @@ aws iam detach-role-policy \
 
 ---
 
-# **6️⃣ Delete IAM Role**
+### **6️⃣ Delete IAM Role**
 
 ```bash
 aws iam delete-role \
@@ -1282,7 +1034,7 @@ aws iam delete-role \
 
 ---
 
-# **7️⃣ Delete Security Group**
+### **7️⃣ Delete Security Group**
 
 ```bash
 SG_ID=$(aws ec2 describe-security-groups \
@@ -1298,21 +1050,15 @@ aws ec2 delete-security-group \
 
 ---
 
-# **8️⃣ Delete Key Pair**
+### **8️⃣ Delete Key Pair**
 
 ```bash
 aws ec2 delete-key-pair --key-name $KEY_NAME
 rm -f $KEY_NAME.pem
 ```
 
----
-
-# ✅ **AWS CLI — Delete Everything Created for Frontend S3 Bucket**
-
-### **Variables**
-
 ```bash
-YOUR_NAME="rahul"                # same as before
+YOUR_NAME="rahul"                
 REGION="us-east-1"
 BUCKET_NAME="ci-cd-workshop-frontend-${YOUR_NAME}"
 echo $BUCKET_NAME
