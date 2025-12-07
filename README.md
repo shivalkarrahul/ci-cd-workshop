@@ -878,7 +878,7 @@ Repeat this for both the repos
 
 ✅ Whenever you push code to the repo, Jenkins will automatically trigger the pipeline.
 
-![Frontend Webhook](artifacts/18.2-frontend-webhook.png)
+![Frontend Webhook](artifacts/18.1-frontend-webhook.png)
 ![Backend Webhook](artifacts/18.2-backend-webhook.png)
 
 ---
@@ -906,9 +906,13 @@ git push origin main
 
 3. Open Jenkins → **frontend-deploy pipeline** → check **Builds**.
 4. The first time it will fail, as the "S3_BUCKET" parameter contains the default value.
-Click on Configure → Scroll down to **This project is parameterised** → Change value of **Default Value** from **ci-cd-workshop-frontend-<your-name>** to your bucket name.
-5. Now again make a small change and follow the above steps to add, commit and push
+5. Edit the Jenkinsfile and update the parameter value to your actual bucket. Change value of **Default Value** from **ci-cd-workshop-frontend-<your-name>** to your bucket name.
+5. Also make a small change and follow the above steps to add, commit and push
 4. Verify pipeline runs successfully and static site is deployed to S3.
+
+![Frontend Jenkinspipeline Success](artifacts/19-frontend-jenkinspipeline-success.png)
+
+
 
 ---
 
