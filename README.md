@@ -601,7 +601,7 @@ Follow these steps carefully:
 
 Your Backend Server is now accessible on port **5000**, which is required for the Frontend App to connect on the Backed App.
 
-![SG 22 & 5000 Rule](artifacts/20-sg-22-5000-rule.png)
+![SG 22 & 5000 Rule](artifacts/10.2-sg-22-5000-rule.png)
 
 
 ### **4 Connect to the ci-cd-workshop-backend-server EC2 Instance**
@@ -1083,12 +1083,23 @@ git push origin main
 3. Open Jenkins → **frontend-deploy pipeline** → check **Builds**.
 4. The first time it will fail, as the "S3_BUCKET" parameter contains the default value.
 5. Edit the Jenkinsfile and update the parameter value to your actual bucket. Change value of **Default Value** from **ci-cd-workshop-frontend-<your-name>** to your bucket name.
-5. Also make a small change and follow the above steps to add, commit and push
-4. Verify pipeline runs successfully and static site is deployed to S3.
+6. Update your `index.html` file to point to your backend server’s public IP:
+   Find this line:
+
+```js
+const API_BASE = "http://127.0.0.1:5000";
+```
+
+Replace it with:
+
+```js
+const API_BASE = "http://<your-backend-server-ip>:5000";
+```
+
+7. Then **add → commit → push** again.
+8. Verify pipeline runs successfully and static site is deployed to S3.
 
 ![Frontend Jenkinspipeline Success](artifacts/19-frontend-jenkinspipeline-success.png)
-
-
 
 ---
 
@@ -1119,10 +1130,7 @@ git push origin main
 5. Also make a small change and follow the above steps to add, commit and push
 4. Verify pipeline runs successfully and static site is deployed to S3.
 
-
-```
-http://<backend-server-public-ip>:5000
-```
+![Backend Jenkinspipeline Success](artifacts/20-backend-jenkinspipeline-success.png)
 
 ---
 
