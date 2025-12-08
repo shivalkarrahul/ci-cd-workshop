@@ -704,7 +704,7 @@ We will create **two DynamoDB tables** to store all app data for the workshop:
 
 ---
 
-### **7 Create IAM Role for EC2**
+### **7 Create IAM Role for ci-cd-workshop-backend-server EC2**
 
 To allow the backend to access S3 and DynamoDB:
 
@@ -1146,142 +1146,256 @@ git push origin main
 
 ## **Pending. Cleanup**
 
-### **Step 0 — Variables**
+Below is **a full cleanup script for ALL your workshop resources**, written exactly in **your variable style**, using **filters by Name**, and **NO paging (`--no-cli-pager`)**, so **you will NEVER be asked to press `q`**.
+
+---
+
+# ✅ **FULL CLEANUP SCRIPT — NO PAGER, NO PROMPTS**
+
+> ⚠️ *This will delete EVERYTHING created for the CI/CD workshop.*
+
+---
+
+## 🚀 **VARIABLES**
 
 ```bash
-NAME=ci-cd-workshop-build-server
-ROLE_NAME=ci-cd-workshop-build-server-role-2
-PROFILE_NAME=ci-cd-workshop-build-server-profile-2
-KEY_NAME=delete-ci-cd-workshop
-SG_NAME=ci-cd-workshop-sg
+REGION="us-east-1"
+
+# Build server
+BUILD_SERVER_NAME="ci-cd-workshop-build-server"
+BUILD_SERVER_ROLE="ci-cd-workshop-build-server-role"
+BUILD_KEY_PAIR="ci-cd-workshop"
+
+# Frontend S3 bucket
+FRONTEND_BUCKET="ci-cd-workshop-frontend-<your-name>"
+
+# Backend server
+BACKEND_SERVER_NAME="ci-cd-workshop-backend-server"
+BACKEND_SERVER_ROLE="ci-cd-workshop-backend-server-role"
+
+# DynamoDB tables
+DDB_ASSIGN_TABLE="ci-cd-workshop-assignments"
+DDB_SUBMIT_TABLE="ci-cd-workshop-submissions"
+
+# Build server
+BUILD_INSTANCE_PROFILE="ci-cd-workshop-build-server-role"
+
+# Backend server
+BACKEND_INSTANCE_PROFILE="ci-cd-workshop-backend-server-role"
+
+# Disable AWS pager
+export AWS_PAGER=""
 ```
 
 ---
 
-### **1️⃣ Delete EC2 Instance**
+## ✅ **1. Delete EC2 Instances (Build + Backend)**
+
+### 🔍 **Get Instance IDs**
 
 ```bash
-INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=$NAME" \
-  --query "Reservations[0].Instances[0].InstanceId" \
-  --output text)
+BUILD_INSTANCE_ID=$(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=$BUILD_SERVER_NAME" \
+    --query "Reservations[].Instances[].InstanceId" \
+    --output text \
+    --region $REGION \
+    --no-cli-pager)
 
-echo "Instance: $INSTANCE_ID"
+echo "Build Server Instance: $BUILD_INSTANCE_ID"
 
-aws ec2 terminate-instances --instance-ids $INSTANCE_ID
-aws ec2 wait instance-terminated --instance-ids $INSTANCE_ID
+BACKEND_INSTANCE_ID=$(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=$BACKEND_SERVER_NAME" \
+    --query "Reservations[].Instances[].InstanceId" \
+    --output text \
+    --region $REGION \
+    --no-cli-pager)
+
+echo "Backend Server Instance: $BACKEND_INSTANCE_ID"
 ```
 
 ---
 
-### **2️⃣ Remove IAM Instance Profile From Instance (if attached)**
-
-AWS sometimes requires disassociation before deletion.
+## 🔐 **2. Get Security Groups from Instances**
 
 ```bash
-aws ec2 disassociate-iam-instance-profile \
-  --association-id $(aws ec2 describe-iam-instance-profile-associations \
-    --query "IamInstanceProfileAssociations[?InstanceId=='$INSTANCE_ID'].AssociationId" \
-    --output text) 2>/dev/null || echo "No association found"
+BUILD_SG_IDS=$(aws ec2 describe-instances \
+    --instance-ids $BUILD_INSTANCE_ID \
+    --query "Reservations[].Instances[].SecurityGroups[].GroupId" \
+    --output text \
+    --region $REGION \
+    --no-cli-pager)
+
+echo "Build Server SGs: $BUILD_SG_IDS"
+
+BACKEND_SG_IDS=$(aws ec2 describe-instances \
+    --instance-ids $BACKEND_INSTANCE_ID \
+    --query "Reservations[].Instances[].SecurityGroups[].GroupId" \
+    --output text \
+    --region $REGION \
+    --no-cli-pager)
+
+echo "Backend Server SGs: $BACKEND_SG_IDS"
 ```
 
 ---
 
-### **3️⃣ Detach Role From Instance Profile**
+## 💥 **3. Terminate Instances**
 
 ```bash
-aws iam remove-role-from-instance-profile \
-  --instance-profile-name $PROFILE_NAME \
-  --role-name $ROLE_NAME 2>/dev/null || echo "Role already removed"
+aws ec2 terminate-instances \
+    --instance-ids $BUILD_INSTANCE_ID $BACKEND_INSTANCE_ID \
+    --region $REGION \
+    --no-cli-pager
 ```
 
 ---
 
-### **4️⃣ Delete Instance Profile**
+## 🧹 **4. Delete Security Groups**
 
 ```bash
-aws iam delete-instance-profile \
-  --instance-profile-name $PROFILE_NAME 2>/dev/null || echo "Instance profile deleted"
+for sg in $BUILD_SG_IDS $BACKEND_SG_IDS; do
+  echo "Deleting SG: $sg"
+  aws ec2 delete-security-group \
+      --group-id "$sg" \
+      --region $REGION \
+      --no-cli-pager
+done
 ```
 
 ---
 
-### **5️⃣ Detach Policies From Role**
+## 🔑 **5. Delete Key Pair**
+
+```bash
+aws ec2 delete-key-pair \
+    --key-name "$BUILD_KEY_PAIR" \
+    --region $REGION \
+    --no-cli-pager
+```
+
+---
+
+## 🪣 **6. Empty & Delete Frontend S3 Bucket**
+
+```bash
+aws s3 rm s3://$FRONTEND_BUCKET --recursive --no-cli-pager
+
+aws s3 rb s3://$FRONTEND_BUCKET --force --no-cli-pager
+```
+
+---
+
+## 🍽 **7. Delete DynamoDB Tables**
+
+```bash
+aws dynamodb delete-table \
+    --table-name $DDB_ASSIGN_TABLE \
+    --region $REGION \
+    --no-cli-pager
+
+aws dynamodb delete-table \
+    --table-name $DDB_SUBMIT_TABLE \
+    --region $REGION \
+    --no-cli-pager
+```
+---
+
+## ✅ **CLEANUP: BACKEND ROLE**
+
+### **1. List attached managed policies**
+
+```bash
+aws iam list-attached-role-policies \
+    --role-name $BACKEND_SERVER_ROLE \
+    --no-cli-pager
+```
+
+### **2. Detach each policy (run for each ARN shown above)**
+
+For example:
 
 ```bash
 aws iam detach-role-policy \
-  --role-name $ROLE_NAME \
-  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess 2>/dev/null || echo "Policy already detached"
+    --role-name $BACKEND_SERVER_ROLE \
+    --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess \
+    --no-cli-pager
+
+aws iam detach-role-policy \
+    --role-name $BACKEND_SERVER_ROLE \
+    --policy-arn arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess \
+    --no-cli-pager
 ```
 
----
+*(These two are the only policies you attached.)*
 
-### **6️⃣ Delete IAM Role**
+### **3. Remove role from instance profile**
+
+```bash
+aws iam remove-role-from-instance-profile \
+    --instance-profile-name $BACKEND_INSTANCE_PROFILE \
+    --role-name $BACKEND_SERVER_ROLE \
+    --no-cli-pager
+```
+
+### **4. Delete instance profile**
+
+```bash
+aws iam delete-instance-profile \
+    --instance-profile-name $BACKEND_INSTANCE_PROFILE \
+    --no-cli-pager
+```
+
+### **5. Delete the role**
 
 ```bash
 aws iam delete-role \
-  --role-name $ROLE_NAME 2>/dev/null || echo "Role deleted"
+    --role-name $BACKEND_SERVER_ROLE \
+    --no-cli-pager
 ```
 
 ---
 
-### **7️⃣ Delete Security Group**
+## ✅ **CLEANUP: BUILD SERVER ROLE**
+
+### **1. List attached managed policies**
 
 ```bash
-SG_ID=$(aws ec2 describe-security-groups \
-  --group-names "$SG_NAME" \
-  --query "SecurityGroups[0].GroupId" \
-  --output text 2>/dev/null)
-
-echo "SG: $SG_ID"
-
-aws ec2 delete-security-group \
-  --group-id $SG_ID 2>/dev/null || echo "SG deleted"
+aws iam list-attached-role-policies \
+    --role-name $BUILD_SERVER_ROLE \
+    --no-cli-pager
 ```
 
----
-
-### **8️⃣ Delete Key Pair**
+### **2. Detach policy**
 
 ```bash
-aws ec2 delete-key-pair --key-name $KEY_NAME
-rm -f $KEY_NAME.pem
+aws iam detach-role-policy \
+    --role-name $BUILD_SERVER_ROLE \
+    --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess \
+    --no-cli-pager
 ```
+
+### **3. Remove role from instance profile**
 
 ```bash
-YOUR_NAME="rahul"                
-REGION="us-east-1"
-BUCKET_NAME="ci-cd-workshop-frontend-${YOUR_NAME}"
-echo $BUCKET_NAME
+aws iam remove-role-from-instance-profile \
+    --instance-profile-name $BUILD_INSTANCE_PROFILE \
+    --role-name $BUILD_SERVER_ROLE \
+    --no-cli-pager
 ```
+
+### **4. Delete instance profile**
 
 ```bash
-aws s3 rm s3://$BUCKET_NAME --recursive
+aws iam delete-instance-profile \
+    --instance-profile-name $BUILD_INSTANCE_PROFILE \
+    --no-cli-pager
 ```
+
+### **5. Delete role**
 
 ```bash
-aws s3api delete-bucket-website \
-  --bucket $BUCKET_NAME
+aws iam delete-role \
+    --role-name $BUILD_SERVER_ROLE \
+    --no-cli-pager
 ```
 
-```bash
-aws s3api delete-bucket-policy \
-  --bucket $BUCKET_NAME
-```
-
-```bash
-aws s3api delete-public-access-block \
-  --bucket $BUCKET_NAME
-```
-
-```bash
-aws s3api delete-bucket \
-  --bucket $BUCKET_NAME \
-  --region $REGION
-```
-
-```bash
-rm -f bucket-policy.json
-```
-
----
