@@ -30,41 +30,63 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ubuntu@${BACKEND_SERVER_IP} "mkdir -p ${DEPLOY_DIR}"
 
                         echo "Copying backend code to backend server..."
-                        scp -o StrictHostKeyChecking=no -r ./* ubuntu@${BACKEND_SERVER_IP}:${DEPLOY_DIR}/
+                        scp -o StrictHostKeyChecking=no app.py backend_version.txt requirements.txt ubuntu@${BACKEND_SERVER_IP}:${DEPLOY_DIR}/
                     '''
                 }
             }
         }
-
+        
         stage('Setup Virtual Environment & Install Dependencies') {
             steps {
                 sshagent (credentials: [env.SSH_CREDENTIALS]) {
-                    sh '''
+                    sh """
+                    echo "Before ssh"
+                    ifconfig
                         echo "Setting up virtual environment on backend server..."
+
                         ssh -o StrictHostKeyChecking=no ubuntu@${BACKEND_SERVER_IP} "
+                        echo "After ssh"
+                        ifconfig
+                            set -e
                             cd ${DEPLOY_DIR}
-                            ${PYTHON} -m venv ${VENV_DIR} || echo 'venv already exists'
-                            source ${VENV_DIR}/bin/activate
+
+                            echo 'Creating venv if missing...'
+                            if [ ! -d venv ]; then
+                                python3 -m venv venv
+                            fi
+
+                            echo 'Activating venv...'
+                            source venv/bin/activate
+
+                            echo 'Installing dependencies...'
                             pip install --upgrade pip
                             pip install -r requirements.txt
                         "
-                    '''
+                    """
                 }
             }
         }
+        
+stage('Stop Existing Backend') {
+    steps {
+        sshagent (credentials: [env.SSH_CREDENTIALS]) {
+            sh """
+                ssh -o StrictHostKeyChecking=no ubuntu@${BACKEND_SERVER_IP} << 'EOF'
+cd ${DEPLOY_DIR}
 
-        stage('Stop Existing Backend') {
-            steps {
-                sshagent (credentials: [env.SSH_CREDENTIALS]) {
-                    sh '''
-                        echo "Stopping old backend if running..."
-                        ssh -o StrictHostKeyChecking=no ubuntu@${BACKEND_SERVER_IP} "pkill -f app.py || true"
-                    '''
-                }
-            }
+if pgrep -f app.py > /dev/null; then
+    echo "Stopping running backend app..."
+    pkill -f app.py
+else
+    echo "No running backend app found."
+fi
+EOF
+            """
         }
+    }
+}
 
-        stage('Start Backend') {
+stage('Start Backend') {
             steps {
                 sshagent (credentials: [env.SSH_CREDENTIALS]) {
                     sh '''
@@ -79,7 +101,7 @@ pipeline {
             }
         }
 
-        stage('Read Backend Version') {
+stage('Read Backend Version') {
             steps {
                 sshagent (credentials: [env.SSH_CREDENTIALS]) {
                     sh '''
@@ -89,6 +111,10 @@ pipeline {
                 }
             }
         }
+
+    
+
+
     }
 
     post {

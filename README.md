@@ -406,6 +406,79 @@ You will now be taken to the Jenkins dashboard.
 
 ![Jenkins UI](artifacts/10-jenkins-ui.png)
 
+### **10.1. Install Required Plugin — SSH Agent Plugin**
+
+The backend pipeline uses the sshagent step for SSH-based deployment.
+To enable it, you must install the SSH Agent Plugin.
+
+111
+Here is a clean, clear, updated version **including the SSH Agent plugin installation step**:
+
+---
+
+# **10. Complete Jenkins Initial Setup**
+
+After unlocking Jenkins, you will see the setup wizard. Follow these steps:
+
+---
+
+## **1. Install Suggested Plugins**
+
+Jenkins will automatically begin installing the recommended plugins.
+(This may take a few minutes.)
+
+---
+
+## **2. Skip Admin User Creation**
+
+When Jenkins asks you to create the first admin user:
+
+* Click **“Skip and continue as admin”**
+
+(For this workshop, you do not need to create a separate user.)
+
+---
+
+## **3. Confirm Jenkins URL**
+
+Jenkins will show the default URL.
+
+* Do **not** change anything
+* Click **Save and Finish**
+
+---
+
+## **4. Jenkins Ready Screen**
+
+You will now see:
+
+**“Jenkins is ready!”**
+
+* Click **Start using Jenkins**
+
+This will take you to the Jenkins dashboard.
+
+# **⚡ 10.1 Install Required Plugin — SSH Agent Plugin**
+
+The backend pipeline uses the `sshagent` step for SSH-based deployment.
+To enable it, you must install the **SSH Agent Plugin**.
+
+1. From the Jenkins dashboard → Click **Manage Jenkins**
+2. Click **Plugins**
+3. Go to the **Available Plugins** tab
+4. Search for:
+
+```
+SSH Agent
+```
+
+5. Install **SSH Agent Plugin**
+6. Restart Jenkins when prompted
+
+This plugin enables the `sshagent { ... }` syntax used in the backend Jenkinsfile.
+
+![Jenkins UI](artifacts/10.1-jenkins-install-ssh-agent.png)
+
 ---
 
 ## **7. Create Infrastructure for 3-Tier App**
@@ -489,9 +562,112 @@ Our backend Flask app will run on an EC2 instance.
 4. Click **Launch instance**
 5. Once running, note the **public IP** — we will use this to connect to the backend.
 
+### **3. Allow Python Port in Security Group**
+
+Python runs on **port 5000**, so we must allow inbound traffic to this port on the Backend Server’s security group.
+
+Follow these steps carefully:
+
+1. Go to the **AWS Console**
+
+2. Search for **EC2** and open it
+
+3. In the left menu, click **Instances**
+
+4. Select your instance named **ci-cd-workshop-backend-server**
+
+5. At the bottom panel, click on the **Security** tab
+
+6. Under **Security groups**, click on the security group linked to your instance
+   (Example: `sg-0123456789abcdef`)
+
+7. Now you are on the **Security Group Details** page
+
+8. Click the **Inbound rules** tab
+
+9. Click on **Edit inbound rules**
+
+10. Click **Add rule**
+
+11. Enter the following:
+
+    * **Type:** Custom TCP
+    * **Port range:** `5000`
+    * **Source:** `0.0.0.0/0` (Anywhere IPv4)
+
+      > This is **NOT recommended for production**, but acceptable for this workshop/demo.
+
+12. Click **Save rules**
+
+Your Backend Server is now accessible on port **5000**, which is required for the Frontend App to connect on the Backed App.
+
+![SG 22 & 5000 Rule](artifacts/20-sg-22-5000-rule.png)
+
+
+### **4 Connect to the ci-cd-workshop-backend-server EC2 Instance**
+
+📌 Important:
+Before connecting, ensure you're working from AWS CloudShell, not from the ci-cd-workshop-build-server EC2 instance.
+If unsure, simply close CloudShell and reopen it—this will start a fresh CloudShell session.
+
+1. Open the **EC2 Console**
+2. Select your instance **ci-cd-workshop-backend-server**
+3. Copy the **Public IPv4 address** from the **Details** tab
+
+Now connect to your server:
+
+```bash
+ssh -i ci-cd-workshop.pem ubuntu@<PUBLIC-IP>
+```
+
+When asked:
+
+```
+Are you sure you want to continue connecting (yes/no/[fingerprint])?
+```
+
+Type:
+
+```
+yes
+```
+
 ---
 
-### **3️⃣ Create Database Layer (DynamoDB)**
+### You are now inside the Build Server.
+
+![SSH into Build Server](artifacts/8-ssh-in-build-server.png)
+
+### **Step 5.5 — Install AWS CLI on Build Server**
+
+Run the following commands on the build server:
+
+```bash
+sudo apt update -y
+```
+
+```bash
+sudo apt install unzip curl -y
+```
+
+```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+```
+
+```bash
+unzip awscliv2.zip
+```
+
+```bash
+sudo ./aws/install
+```
+
+```bash
+aws --version
+```
+---
+
+### **3️5 Create Database Layer (DynamoDB)**
 
 We will create **two DynamoDB tables** to store all app data for the workshop:
 
@@ -509,7 +685,7 @@ We will create **two DynamoDB tables** to store all app data for the workshop:
 
 ---
 
-### **4️⃣Steps to Create the Tables**
+### **6Steps to Create the Tables**
 
 1. Open **AWS Console → DynamoDB**: [https://us-east-1.console.aws.amazon.com/dynamodbv2/home?region=us-east-1#dashboard](https://us-east-1.console.aws.amazon.com/dynamodbv2/home?region=us-east-1#dashboard)
 2. Click **Create table** for the **Assignments Table**:
@@ -528,7 +704,7 @@ We will create **two DynamoDB tables** to store all app data for the workshop:
 
 ---
 
-### **5 Create IAM Role for EC2**
+### **7 Create IAM Role for EC2**
 
 To allow the backend to access S3 and DynamoDB:
 
@@ -937,9 +1113,12 @@ git commit -m "Test backend update"
 git push origin main
 ```
 
-3. Open Jenkins → **backend-deploy pipeline** → check **Build History**.
-4. Verify pipeline runs successfully and backend app is deployed to the backend EC2 server.
-   You can test backend by opening:
+3. Open Jenkins → **frontend-deploy pipeline** → check **Builds**.
+4. The first time it will fail, as the "BACKEND_SERVER_IP" parameter contains the default value.
+5. Edit the Jenkinsfile and update the parameter value to your actual backend-server-ip. Change value of **Default Value** from **<backend-server-ip>** to your backend-server-ip public IP.
+5. Also make a small change and follow the above steps to add, commit and push
+4. Verify pipeline runs successfully and static site is deployed to S3.
+
 
 ```
 http://<backend-server-public-ip>:5000
