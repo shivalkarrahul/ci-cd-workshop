@@ -214,13 +214,13 @@ Using a dedicated server keeps deployment consistent and separate from local mac
 
 We will create **one build server** in the **N. Virginia (us-east-1)** region.
 
-### **4.1 — Confirm AWS Region**
+### **4.1. Confirm AWS Region**
 
 Ensure your AWS region is set to:
 
 **US East (N. Virginia) — us-east-1**
 
-### **4.2 — Create the EC2 Instance**
+### **4.2. Create the EC2 Instance**
 
 1. In the AWS Console, search for **EC2** and open it.
 
@@ -265,7 +265,7 @@ Ensure your AWS region is set to:
 ![Build Server](artifacts/4-build-server.png)
 
 
-### **4.3 Create IAM Role for Build Server EC2**
+### **4.3. Create IAM Role for Build Server EC2**
 
 ### 📖 Theory
 <details> <summary>🔑 IAM Role for Secure Access</summary>
@@ -287,7 +287,7 @@ To allow the backend to access S3 :
 6. Name the role: `ci-cd-workshop-build-server-role`
 7. Create role
 
-### **4.4 Attach the IAM Role to Build Server EC2 Instance**
+### **4.4. Attach the IAM Role to Build Server EC2 Instance**
 
 ### 📖 Theory
 <details> <summary>🔗 Linking Role to EC2</summary>
@@ -393,7 +393,7 @@ yes
 
 ### **4.10. Install AWS CLI on Build Server**
 
-### 📖 Theory
+#### 📖 Theory
 <details> <summary>⚙️ Why AWS CLI is needed</summary>
 The AWS CLI allows the build server to interact with AWS services like S3 and EC2 programmatically.  
 It is essential for pipelines to automate deployments, create resources, and manage AWS infrastructure without manually using the console.
@@ -650,7 +650,7 @@ Got it! Here’s a **single-step version** that includes bucket creation, static
 
 ---
 
-### **6.1 Create Frontend S3 Bucket (Static Website)**
+### **6.1. Create Frontend S3 Bucket (Static Website)**
 
 1. Open the **AWS Console → S3**: [https://us-east-1.console.aws.amazon.com/s3/home?region=us-east-1](https://us-east-1.console.aws.amazon.com/s3/home?region=us-east-1) and click **Create bucket**.
 2. Configure the bucket:
@@ -693,7 +693,7 @@ Got it! Here’s a **single-step version** that includes bucket creation, static
 
 ---
 
-### **6.2 Create Backend EC2 Instance**
+### **6.2. Create Backend EC2 Instance**
 
 Our backend Flask app will run on an EC2 instance.
 
@@ -791,7 +791,7 @@ yes
 
 ![SSH into Build Server](artifacts/8-ssh-in-build-server.png)
 
-### ** Pending - 6.5. — Install AWS CLI on Backend Server **
+### ** Pending - 6.5. Install AWS CLI on Backend Server **
 
 Run the following commands on the build server:
 
@@ -1305,7 +1305,6 @@ git push origin main
 
 ---
 
-
 ## **9. Cleanup**
 
 ### 📖 Theory
@@ -1315,8 +1314,22 @@ This ensures no lingering costs or unnecessary AWS resources after the workshop.
 </details>
 
 
-Below is **a full cleanup script for ALL your workshop resources**, written exactly in **your variable style**, using **filters by Name**, and **NO paging (`--no-cli-pager`)**, so **you will NEVER be asked to press `q`**.
+### **Before You Continue — Important Note**
 
+You can **delete all resources manually from the AWS Console** (EC2, S3, IAM, DynamoDB, Security Groups, Key Pairs, etc.).
+That approach is completely valid.
+
+However, manual deletion is:
+
+* slow
+* error-prone
+* easy to miss resources
+* painful if you created many items
+
+So the script below is provided **only to save your time** and ensure everything is deleted cleanly.
+
+Now, go to AWS Console → Click CloudShell icon (top right)
+Then run the commands below.
 
 ### 🚀 **9.1 Export Variables**
 
@@ -1351,7 +1364,7 @@ export AWS_PAGER=""
 
 ---
 
-### ✅ **9.2. Delete EC2 Instances (Build + Backend)**
+### **9.2. Delete EC2 Instances (Build + Backend)**
 
 #### 🔍 **9.2.1. Get Instance IDs**
 
@@ -1377,7 +1390,7 @@ echo "Backend Server Instance: $BACKEND_INSTANCE_ID"
 
 ---
 
-#### 🔐 **9.2.2. Get Security Groups from Instances**
+#### **9.2.2. Get Security Groups from Instances**
 
 ```bash
 BUILD_SG_IDS=$(aws ec2 describe-instances \
@@ -1401,7 +1414,7 @@ echo "Backend Server SGs: $BACKEND_SG_IDS"
 
 ---
 
-#### 💥 **9.2.3. Terminate Instances**
+#### **9.2.3. Terminate Instances**
 
 ```bash
 aws ec2 terminate-instances \
@@ -1426,7 +1439,7 @@ done
 
 ---
 
-#### 🔑 **9.2.5. Delete Key Pair**
+#### **9.2.5. Delete Key Pair**
 
 ```bash
 aws ec2 delete-key-pair \
@@ -1437,7 +1450,7 @@ aws ec2 delete-key-pair \
 
 ---
 
-## 🪣 **9.3. Empty & Delete Frontend S3 Bucket**
+## **9.3. Empty & Delete Frontend S3 Bucket**
 
 ```bash
 aws s3 rm s3://$FRONTEND_BUCKET --recursive --no-cli-pager
@@ -1447,7 +1460,7 @@ aws s3 rb s3://$FRONTEND_BUCKET --force --no-cli-pager
 
 ---
 
-## 🍽 **9.4. Delete DynamoDB Tables**
+## **9.4. Delete DynamoDB Tables**
 
 ```bash
 aws dynamodb delete-table \
