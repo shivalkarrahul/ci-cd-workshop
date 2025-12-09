@@ -8,54 +8,82 @@ The workshop repository contains all pre-written code, configuration files, and 
 Accessing the repository ensures everyone uses the same version of files, avoiding inconsistencies and errors during the CI/CD setup.
 </details>
 
+To start the workshop, we first need to access the repository containing all the files and instructions.
 
-You can open the CI/CD Workshop repository in any of the following ways:
+### **Step — Using Google Search (Recommended for Beginners)**
 
-### **Method 1: Google Search**
+1. Open [Google](https://www.google.com).
+2. Search for: **`rahul shivalkar github`**
+3. Click on the GitHub profile shown in the results.
+4. Go to the **Repositories** tab.
+5. Click on the repository named **`ci-cd-workshop`**.
 
-1. Visit **[https://www.google.com](https://www.google.com)**
-2. Search for **rahul shivalkar github**
-3. Open the GitHub profile shown in the results, go to Repositories.
-4. Click the repository **ci-cd-workshop**.
+> 📌 **Why we do this:**
+> This ensures you are always accessing the correct and latest repository, even if you don’t have the direct link. It also helps beginners practice finding resources on GitHub.
 
 ![GitHub Repo List](artifacts/1-github-repo-list.png)
 
-
-### **Method 2: Direct Links**
-
-* GitHub Profile: **[https://github.com/shivalkarrahul](https://github.com/shivalkarrahul)**
-* Workshop Repo: **[https://github.com/shivalkarrahul/ci-cd-workshop](https://github.com/shivalkarrahul/ci-cd-workshop)**
+Here’s a refined, beginner-friendly version of your section with a slightly smoother flow and clearer explanation:
 
 ---
 
 ## **2. Create or Sign In to Your AWS Account**
 
 ### 📖 Theory
-<details> <summary>☁️ AWS Account Essentials</summary>
-AWS provides the infrastructure needed to host and deploy your CI/CD workshop app.  
-An account gives access to services like EC2, S3, and DynamoDB, which are required for the frontend, backend, and database layers of the application.
+
+<details> <summary>☁️ Why We Need an AWS Account</summary>
+AWS provides the cloud infrastructure required to run our CI/CD workshop application.  
+With an AWS account, you can access essential services like:  
+
+* **EC2** → to run backend and build servers
+* **S3** → to host the frontend static website
+* **DynamoDB** → to store application data
+
+Having an account ensures you can create, manage, and deploy resources needed for all layers of the application.
+
 </details>
 
+### **Steps**
 
-1. Open: **[https://aws.amazon.com/console/](https://aws.amazon.com/console/)**
-2. If you don’t have an account → **Create a new AWS account**
-3. If you already have one → **Sign In**
+1. Open the AWS Console: **[https://aws.amazon.com/console/](https://aws.amazon.com/console/)**
+2. If you **don’t have an account**, click **Create account** and follow the sign-up steps.
+3. If you **already have an account**, click **Sign In** and enter your credentials.
+
+> 💡 **Tip for Beginners:** Make sure you note down your account email and password, as you’ll need them throughout the workshop.
 
 ![AWS Console](artifacts/2-aws-console.png)
+
+---
+
+Here’s a refined, beginner-friendly version of your GitHub section:
+
 ---
 
 ## **3. Create or Sign In to Your GitHub Account**
 
 ### 📖 Theory
-<details> <summary>🐙 Version Control with GitHub</summary>
-GitHub hosts your application code and enables version control.  
-By committing and pushing code, you can track changes, collaborate, and integrate it with Jenkins pipelines for automated CI/CD deployment.
+
+<details> <summary>🐙 Why GitHub is Important</summary>
+GitHub is a cloud-based platform for **version control** using Git.  
+
+It allows you to:
+
+* **Store your code** securely in repositories
+* **Track changes** to your files over time
+* **Collaborate** with others on the same project
+* **Integrate with Jenkins** for automated CI/CD pipelines
+
+Using GitHub ensures your workshop code is organized, safe, and ready for deployment.
+
 </details>
 
+### **Steps**
 
-1. Open: **[https://github.com/](https://github.com/)**
-2. If you don’t have an account → **Sign up**
-3. If you already have an account → **Sign in**
+1. Open the GitHub website: **[https://github.com/](https://github.com/)**
+2. If you **don’t have an account**, click **Sign up** and follow the instructions.
+3. If you **already have an account**, click **Sign in** and enter your credentials.
+
+> 💡 **Tip for Beginners:** Remember your GitHub username and password, as you’ll need them when configuring repositories and Jenkins pipelines.
 
 ![GitHub Console](artifacts/3-github-console.png)
 
@@ -69,7 +97,6 @@ The build server (EC2 instance) acts as the CI/CD orchestrator.
 It runs Jenkins, pulls code from GitHub, and automates deployment for both frontend and backend components.  
 Using a dedicated server keeps deployment consistent and separate from local machines.
 </details>
-
 
 We will create **one build server** in the **N. Virginia (us-east-1)** region.
 
@@ -124,7 +151,7 @@ Ensure your AWS region is set to:
 ![Build Server](artifacts/4-build-server.png)
 
 
-## **4.1 Create IAM Role for Build Server EC2**
+### **4.3 Create IAM Role for Build Server EC2**
 
 ### 📖 Theory
 <details> <summary>🔑 IAM Role for Secure Access</summary>
@@ -133,9 +160,7 @@ For this workshop, the role allows the build server to access S3 for frontend de
 Roles eliminate the need to store credentials on the server itself.
 </details>
 
-
 To allow the backend to access S3 :
-
 
 1. Go to **AWS Console → IAM**: [https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/home](https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/home)
 2. Role
@@ -148,7 +173,7 @@ To allow the backend to access S3 :
 6. Name the role: `ci-cd-workshop-build-server-role`
 7. Create role
 
-## **4.2 Attach the IAM Role to Build Server EC2 Instance**
+### **4.4 Attach the IAM Role to Build Server EC2 Instance**
 
 ### 📖 Theory
 <details> <summary>🔗 Linking Role to EC2</summary>
@@ -160,7 +185,7 @@ This is required for Jenkins pipelines to deploy the frontend to S3 without manu
 1. Go to **EC2 → Instances → Select ci-cd-workshop-build-server → Actions → Security → Modify IAM Role → Search and Select `ci-cd-workshop-build-server-role` → Click Update IAM role**
 
 
-## **5. Connect to the Build Server (EC2 Instance)**
+### **4.5. Connect to the Build Server (EC2 Instance)**
 
 ### 📖 Theory
 <details> <summary>🔐 Secure Connection Methods</summary>
@@ -184,7 +209,7 @@ For this workshop, **we will use AWS CloudShell** to keep things simple.
 
 ---
 
-### **Step 5.1 — Open AWS CloudShell**
+### **4.6 — Open AWS CloudShell**
 
 1. On the AWS Console header, click the **CloudShell icon**
    (located near the **top center** of the page, slightly right of the search box).
@@ -199,7 +224,7 @@ For this workshop, **we will use AWS CloudShell** to keep things simple.
 
 ---
 
-### **Step 5.2 — Upload Your .pem File**
+### **4.7 — Upload Your .pem File**
 
 1. In CloudShell, click **Actions → Upload file**
 2. Select the key file you downloaded earlier:
@@ -210,7 +235,7 @@ For this workshop, **we will use AWS CloudShell** to keep things simple.
 
 ---
 
-### **Step 5.3 — Set Correct File Permissions**
+### **4.8 — Set Correct File Permissions**
 
 Run the following command in CloudShell:
 
@@ -222,7 +247,7 @@ This sets secure permissions required by SSH.
 
 ---
 
-### **Step 5.4 — Connect to the ci-cd-workshop-build-server EC2 Instance**
+### **4.9 — Connect to the ci-cd-workshop-build-server EC2 Instance**
 
 1. Open the **EC2 Console**
 2. Select your instance **ci-cd-workshop-build-server**
@@ -248,11 +273,11 @@ yes
 
 ---
 
-### You are now inside the Build Server.
+#### You are now inside the Build Server.
 
 ![SSH into Build Server](artifacts/8-ssh-in-build-server.png)
 
-### **Step 5.5 — Install AWS CLI on Build Server**
+### **4.10 — Install AWS CLI on Build Server**
 
 ### 📖 Theory
 <details> <summary>⚙️ Why AWS CLI is needed</summary>
@@ -290,7 +315,7 @@ aws --version
 
 ---
 
-## **6. Install Jenkins on the Build Server (EC2 Instance)**
+## **5. Install Jenkins on the Build Server (EC2 Instance)**
 
 ### 📖 Theory
 <details> <summary>🧩 Jenkins for CI/CD</summary>
@@ -303,7 +328,7 @@ Follow the steps below on your EC2 build server after connecting through CloudSh
 
 ---
 
-### **1. Install Java (Required by Jenkins)**
+### **5.1. Install Java (Required by Jenkins)**
 
 ```bash
 sudo apt update
@@ -318,25 +343,17 @@ java -version
 
 ---
 
-### **2. Add the Jenkins Repository Key**
+### **5.2. Install Jenkins**
 
 ```bash
 curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key \
   | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
 ```
 
----
-
-### **3. Add the Jenkins Repository**
-
 ```bash
 echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/" \
   | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 ```
-
----
-
-### **4. Update apt**
 
 ```bash
 sudo apt update
@@ -344,17 +361,9 @@ sudo apt update
 
 You should now see entries from **pkg.jenkins.io** in the output.
 
----
-
-### **5. Install Jenkins**
-
 ```bash
 sudo apt install jenkins -y
 ```
-
----
-
-### **6. Start and Enable Jenkins Service**
 
 Start Jenkins:
 
@@ -378,7 +387,7 @@ You should see **active (running)**.
 
 ---
 
-### **7. Allow Jenkins Port in Security Group**
+### **5.3. Configure Security Group for Jenkins**
 
 Jenkins runs on **port 8080**, so we must allow inbound traffic to this port on the Build Server’s security group.
 
@@ -421,7 +430,16 @@ Your Build Server is now accessible on port **8080**, which is required to open 
 
 ---
 
-### **8. Access Jenkins UI**
+### **5.4. Access Jenkins UI and Complete Initial Setup**
+
+#### 📖 Theory
+<details> <summary>🔧 Configuring Jenkins</summary>
+The initial setup configures Jenkins with suggested plugins, unlocks the admin account, and prepares it for pipelines.  
+The SSH Agent Plugin allows Jenkins to securely connect to backend EC2 servers via SSH, enabling automated backend deployments.
+
+The backend pipeline uses the sshagent step for SSH-based deployment.
+To enable it, you must install the SSH Agent Plugin.
+</details>
 
 Open your browser and visit:
 
@@ -431,9 +449,6 @@ http://<public-ip>:8080
 
 Replace `<public-ip>` with the public IP of the Build Server EC2 instance.
 
----
-
-### **9. Retrieve Initial Admin Password**
 
 Run the following command in CloudShell (already connected to your EC2 instance):
 
@@ -442,18 +457,6 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 
 Copy the displayed password and paste it into the Jenkins unlock screen.
-
-Here is **Step 10** written clearly and professionally in the same workshop style:
-
----
-
-### **10. Complete Jenkins Initial Setup**
-
-### 📖 Theory
-<details> <summary>🔧 Configuring Jenkins</summary>
-The initial setup configures Jenkins with suggested plugins, unlocks the admin account, and prepares it for pipelines.  
-The SSH Agent Plugin allows Jenkins to securely connect to backend EC2 servers via SSH, enabling automated backend deployments.
-</details>
 
 
 After unlocking Jenkins, you will see the setup wizard. Follow these steps:
@@ -479,59 +482,10 @@ You will now be taken to the Jenkins dashboard.
 
 ![Jenkins UI](artifacts/10-jenkins-ui.png)
 
-### **10.1. Install Required Plugin — SSH Agent Plugin**
-
-The backend pipeline uses the sshagent step for SSH-based deployment.
-To enable it, you must install the SSH Agent Plugin.
-
-111
-Here is a clean, clear, updated version **including the SSH Agent plugin installation step**:
-
----
-
-# **10. Complete Jenkins Initial Setup**
-
-After unlocking Jenkins, you will see the setup wizard. Follow these steps:
-
----
-
-## **1. Install Suggested Plugins**
-
 Jenkins will automatically begin installing the recommended plugins.
 (This may take a few minutes.)
 
----
-
-## **2. Skip Admin User Creation**
-
-When Jenkins asks you to create the first admin user:
-
-* Click **“Skip and continue as admin”**
-
-(For this workshop, you do not need to create a separate user.)
-
----
-
-## **3. Confirm Jenkins URL**
-
-Jenkins will show the default URL.
-
-* Do **not** change anything
-* Click **Save and Finish**
-
----
-
-## **4. Jenkins Ready Screen**
-
-You will now see:
-
-**“Jenkins is ready!”**
-
-* Click **Start using Jenkins**
-
-This will take you to the Jenkins dashboard.
-
-# **⚡ 10.1 Install Required Plugin — SSH Agent Plugin**
+### **5.5. Install Required Plugin — SSH Agent Plugin**
 
 The backend pipeline uses the `sshagent` step for SSH-based deployment.
 To enable it, you must install the **SSH Agent Plugin**.
@@ -554,7 +508,7 @@ This plugin enables the `sshagent { ... }` syntax used in the backend Jenkinsfil
 
 ---
 
-## **7. Create Infrastructure for 3-Tier App**
+## **6. Create Infrastructure for 3-Tier App**
 
 ### 📖 Theory
 <details> <summary>🏗️ Three-Tier Architecture</summary>
@@ -582,7 +536,7 @@ Got it! Here’s a **single-step version** that includes bucket creation, static
 
 ---
 
-### **1️⃣ Create Frontend S3 Bucket (Static Website)**
+### **6.1 Create Frontend S3 Bucket (Static Website)**
 
 1. Open the **AWS Console → S3**: [https://us-east-1.console.aws.amazon.com/s3/home?region=us-east-1](https://us-east-1.console.aws.amazon.com/s3/home?region=us-east-1) and click **Create bucket**.
 2. Configure the bucket:
@@ -625,7 +579,7 @@ Got it! Here’s a **single-step version** that includes bucket creation, static
 
 ---
 
-### **2️⃣ Create Backend EC2 Instance**
+### **6.2 Create Backend EC2 Instance**
 
 Our backend Flask app will run on an EC2 instance.
 
@@ -647,7 +601,7 @@ Our backend Flask app will run on an EC2 instance.
 4. Click **Launch instance**
 5. Once running, note the **public IP** — we will use this to connect to the backend.
 
-### **3. Allow Python Port in Security Group**
+### **6.3. Allow Python Port in Security Group**
 
 Python runs on **port 5000**, so we must allow inbound traffic to this port on the Backend Server’s security group.
 
@@ -689,7 +643,7 @@ Your Backend Server is now accessible on port **5000**, which is required for th
 ![SG 22 & 5000 Rule](artifacts/10.2-sg-22-5000-rule.png)
 
 
-### **4 Connect to the ci-cd-workshop-backend-server EC2 Instance**
+### **6.4 Connect to the ci-cd-workshop-backend-server EC2 Instance**
 
 📌 Important:
 Before connecting, ensure you're working from AWS CloudShell, not from the ci-cd-workshop-build-server EC2 instance.
@@ -719,11 +673,11 @@ yes
 
 ---
 
-### You are now inside the Build Server.
+#### You are now inside the Build Server.
 
 ![SSH into Build Server](artifacts/8-ssh-in-build-server.png)
 
-### **Step 5.5 — Install AWS CLI on Build Server**
+### **6.5 — Install AWS CLI on Build Server**
 
 Run the following commands on the build server:
 
@@ -752,7 +706,7 @@ aws --version
 ```
 ---
 
-### **3️5 Create Database Layer (DynamoDB)**
+### **6.6 Create Database Layer (DynamoDB)**
 
 We will create **two DynamoDB tables** to store all app data for the workshop:
 
@@ -767,10 +721,6 @@ We will create **two DynamoDB tables** to store all app data for the workshop:
    * **Primary key:** `submission_id` (String)
 
 > ⚠ Note: DynamoDB table names must be unique in your account. If you already have a table with this name, add a short suffix like your initials (e.g., `ci-cd-workshop-assignments-rs`)
-
----
-
-### **6Steps to Create the Tables**
 
 1. Open **AWS Console → DynamoDB**: [https://us-east-1.console.aws.amazon.com/dynamodbv2/home?region=us-east-1#dashboard](https://us-east-1.console.aws.amazon.com/dynamodbv2/home?region=us-east-1#dashboard)
 2. Click **Create table** for the **Assignments Table**:
@@ -789,7 +739,7 @@ We will create **two DynamoDB tables** to store all app data for the workshop:
 
 ---
 
-### **7 Create IAM Role for ci-cd-workshop-backend-server EC2**
+### **6.7 Create IAM Role for ci-cd-workshop-backend-server EC2**
 
 To allow the backend to access S3 and DynamoDB:
 
@@ -809,13 +759,12 @@ To allow the backend to access S3 and DynamoDB:
 ### **5 Attach the IAM Role to EC2**
 1. Go to **EC2 → Instances → Select ci-cd-workshop-backend-server → Actions → Security → Modify IAM Role → Search and Select `ci-cd-workshop-backend-server-role` → Click Update IAM role**
 
----
 
 ✅ All three tiers of our app are now ready!
 
 ---
 
-## **8. Set Up GitHub Repositories and Push Workshop Files**
+## **7. Set Up GitHub Repositories and Push Workshop Files**
 
 ### 📖 Theory
 <details> <summary>💾 Code Management and Versioning</summary>
@@ -830,7 +779,7 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ---
 
-### **1 — Create GitHub Repositories**
+### **7.1 — Create GitHub Repositories**
 
 1. Open your GitHub account: [https://github.com/](https://github.com/)
 2. Click **New**.
@@ -845,7 +794,7 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ---
 
-### **2 — Create GitHub Personal Access Token (PAT)**
+### **7.2 — Create GitHub Personal Access Token (PAT)**
 
 1. Click your **profile picture → Settings → Developer settings → Personal access tokens → Tokens (classic)**
 2. Click **Generate new token → Generate new token (classic)**
@@ -864,7 +813,7 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ---
 
-### **3 — Connect to Build Server**
+### **7.3 — Connect to Build Server**
 
 1. Open **CloudShell** from AWS Console:
 
@@ -884,7 +833,7 @@ cd ~/ci-cd-workshop
 
 ---
 
-### **4 — Configure Git (First Time Only)**
+### **7.4 — Configure Git (First Time Only)**
 
 ```bash
 git config --global user.name "Your Name"
@@ -896,7 +845,7 @@ git config --global user.email "your-email@example.com"
 
 ---
 
-### **5 — Clone the Repositories Using HTTPS**
+### **7.5 — Clone the Repositories Using HTTPS**
 
 Replace `<your-username>` with your GitHub username:
 
@@ -919,7 +868,7 @@ git clone https://github.com/<your-username>/ci-cd-workshop-backend.git
 
 ---
 
-### **6 — Download and Copy Workshop Files**
+### **7.6 — Download and Copy Workshop Files**
 
 #### **Frontend Files**
 
@@ -946,7 +895,7 @@ wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backen
 
 ---
 
-### **7 — Commit and Push Changes**
+### **7.7 — Commit and Push Changes**
 
 #### **Frontend Repo**
 
@@ -1021,7 +970,7 @@ git push origin main
 
 ---
 
-### **8 — Verify on GitHub**
+### **7.8 — Verify on GitHub**
 
 1. Open the repositories in your GitHub account:
 
@@ -1033,13 +982,11 @@ git push origin main
 
 2. You should see all your files and initial commits.
 
----
-
 ✅ **Congratulations!** Your workshop files are now versioned in GitHub and ready for Jenkins CI/CD pipelines.
 
 ---
 
-## **9. Configure Jenkins Pipelines & Deployment (CI/CD Automation)**
+## **8. Configure Jenkins Pipelines & Deployment (CI/CD Automation)**
 
 ### 📖 Theory
 <details> <summary>🚀 Automating Deployment</summary>
@@ -1058,7 +1005,7 @@ In this step, we will **configure Jenkins** to automatically deploy the **fronte
 
 ---
 
-### **1 — Store SSH Key in Jenkins**
+### **8.1 — Store SSH Key in Jenkins**
 
 We will use the **existing EC2 key pair** `ci-cd-workshop.pem` for backend deployment.
 
@@ -1086,7 +1033,7 @@ We will use the **existing EC2 key pair** `ci-cd-workshop.pem` for backend deplo
 
 ---
 
-### **2 — Create Jenkins Pipeline for Frontend**
+### **8.2 — Create Jenkins Pipeline for Frontend**
 
 We will create a **frontend pipeline** that deploys the static site to S3 using a **parameterized bucket name**.
 
@@ -1111,7 +1058,7 @@ We will create a **frontend pipeline** that deploys the static site to S3 using 
 
 ---
 
-### **3 — Create Jenkins Pipeline for Backend**
+### **8.3 — Create Jenkins Pipeline for Backend**
 
 We will create a **backend pipeline** that deploys the Python Flask app to the backend EC2 server using SSH.
 
@@ -1136,7 +1083,7 @@ We will create a **backend pipeline** that deploys the Python Flask app to the b
 
 ---
 
-### **4 — Configure GitHub Webhooks**
+### **8.4 — Configure GitHub Webhooks**
 
 We will make Jenkins automatically trigger pipelines on **GitHub push**.
 
@@ -1162,7 +1109,7 @@ Repeat this for both the repos
 
 ---
 
-### **5 — Test Frontend Pipeline**
+### **8.5 — Test Frontend Pipeline**
 
 1. Make a change to **frontend repo** (e.g., edit `frontend_version.json` and change the version).
 2. Push to GitHub from **build server**:
@@ -1206,7 +1153,7 @@ const API_BASE = "http://<your-backend-server-ip>:5000";
 
 ---
 
-### **6 — Test Backend Pipeline**
+### **8.6 — Test Backend Pipeline**
 
 1. Make a change to **backend repo** (e.g., edit `backend_version.txt`).
 2. Push to GitHub from **build server**:
@@ -1235,8 +1182,6 @@ git push origin main
 
 ![Backend Jenkinspipeline Success](artifacts/20-backend-jenkinspipeline-success.png)
 
----
-
 ### **Congratulations!**
 
 * Frontend and backend are now fully automated using **Jenkins pipelines**.
@@ -1247,7 +1192,7 @@ git push origin main
 ---
 
 
-## **Cleanup**
+## **9. Cleanup**
 
 ### 📖 Theory
 <details> <summary>🧹 Cleaning Up Resources</summary>
@@ -1258,15 +1203,8 @@ This ensures no lingering costs or unnecessary AWS resources after the workshop.
 
 Below is **a full cleanup script for ALL your workshop resources**, written exactly in **your variable style**, using **filters by Name**, and **NO paging (`--no-cli-pager`)**, so **you will NEVER be asked to press `q`**.
 
----
 
-# ✅ **FULL CLEANUP SCRIPT — NO PAGER, NO PROMPTS**
-
-> ⚠️ *This will delete EVERYTHING created for the CI/CD workshop.*
-
----
-
-## 🚀 **VARIABLES**
+### 🚀 **9.1 Export Variables**
 
 ```bash
 REGION="us-east-1"
@@ -1299,9 +1237,9 @@ export AWS_PAGER=""
 
 ---
 
-## ✅ **1. Delete EC2 Instances (Build + Backend)**
+### ✅ **9.2. Delete EC2 Instances (Build + Backend)**
 
-### 🔍 **Get Instance IDs**
+#### 🔍 **9.2.1. Get Instance IDs**
 
 ```bash
 BUILD_INSTANCE_ID=$(aws ec2 describe-instances \
@@ -1325,7 +1263,7 @@ echo "Backend Server Instance: $BACKEND_INSTANCE_ID"
 
 ---
 
-## 🔐 **2. Get Security Groups from Instances**
+#### 🔐 **9.2.2. Get Security Groups from Instances**
 
 ```bash
 BUILD_SG_IDS=$(aws ec2 describe-instances \
@@ -1349,7 +1287,7 @@ echo "Backend Server SGs: $BACKEND_SG_IDS"
 
 ---
 
-## 💥 **3. Terminate Instances**
+#### 💥 **9.2.3. Terminate Instances**
 
 ```bash
 aws ec2 terminate-instances \
@@ -1360,7 +1298,7 @@ aws ec2 terminate-instances \
 
 ---
 
-## 🧹 **4. Delete Security Groups**
+#### 🧹 **9.2.4. Delete Security Groups**
 
 ```bash
 for sg in $BUILD_SG_IDS $BACKEND_SG_IDS; do
@@ -1374,7 +1312,7 @@ done
 
 ---
 
-## 🔑 **5. Delete Key Pair**
+#### 🔑 **9.2.5. Delete Key Pair**
 
 ```bash
 aws ec2 delete-key-pair \
@@ -1385,7 +1323,7 @@ aws ec2 delete-key-pair \
 
 ---
 
-## 🪣 **6. Empty & Delete Frontend S3 Bucket**
+## 🪣 **9.3. Empty & Delete Frontend S3 Bucket**
 
 ```bash
 aws s3 rm s3://$FRONTEND_BUCKET --recursive --no-cli-pager
@@ -1395,7 +1333,7 @@ aws s3 rb s3://$FRONTEND_BUCKET --force --no-cli-pager
 
 ---
 
-## 🍽 **7. Delete DynamoDB Tables**
+## 🍽 **9.4. Delete DynamoDB Tables**
 
 ```bash
 aws dynamodb delete-table \
@@ -1410,9 +1348,9 @@ aws dynamodb delete-table \
 ```
 ---
 
-## ✅ **CLEANUP: BACKEND ROLE**
+## **9.5. Delete Backend Role**
 
-### **1. List attached managed policies**
+### **9.5.1. List attached managed policies**
 
 ```bash
 aws iam list-attached-role-policies \
@@ -1420,7 +1358,7 @@ aws iam list-attached-role-policies \
     --no-cli-pager
 ```
 
-### **2. Detach each policy (run for each ARN shown above)**
+### **9.5.2. Detach each policy (run for each ARN shown above)**
 
 For example:
 
@@ -1438,7 +1376,7 @@ aws iam detach-role-policy \
 
 *(These two are the only policies you attached.)*
 
-### **3. Remove role from instance profile**
+### **9.5.3. Remove role from instance profile**
 
 ```bash
 aws iam remove-role-from-instance-profile \
@@ -1447,7 +1385,7 @@ aws iam remove-role-from-instance-profile \
     --no-cli-pager
 ```
 
-### **4. Delete instance profile**
+### **9.5.4. Delete instance profile**
 
 ```bash
 aws iam delete-instance-profile \
@@ -1455,7 +1393,7 @@ aws iam delete-instance-profile \
     --no-cli-pager
 ```
 
-### **5. Delete the role**
+### **9.5.5. Delete the role**
 
 ```bash
 aws iam delete-role \
@@ -1465,9 +1403,9 @@ aws iam delete-role \
 
 ---
 
-## ✅ **CLEANUP: BUILD SERVER ROLE**
+## **9.6. Delete Build Server Role**
 
-### **1. List attached managed policies**
+### **9.6.1. List attached managed policies**
 
 ```bash
 aws iam list-attached-role-policies \
@@ -1475,7 +1413,7 @@ aws iam list-attached-role-policies \
     --no-cli-pager
 ```
 
-### **2. Detach policy**
+### **9.6.2. Detach policy**
 
 ```bash
 aws iam detach-role-policy \
@@ -1484,7 +1422,7 @@ aws iam detach-role-policy \
     --no-cli-pager
 ```
 
-### **3. Remove role from instance profile**
+### **9.6.3. Remove role from instance profile**
 
 ```bash
 aws iam remove-role-from-instance-profile \
@@ -1493,7 +1431,7 @@ aws iam remove-role-from-instance-profile \
     --no-cli-pager
 ```
 
-### **4. Delete instance profile**
+### **9.6.4. Delete instance profile**
 
 ```bash
 aws iam delete-instance-profile \
@@ -1501,7 +1439,7 @@ aws iam delete-instance-profile \
     --no-cli-pager
 ```
 
-### **5. Delete role**
+### **9.6.5. Delete role**
 
 ```bash
 aws iam delete-role \
