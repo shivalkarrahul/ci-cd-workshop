@@ -13,14 +13,6 @@ You can open the CI/CD Workshop repository in any of the following ways:
 
 ### **Method 1: Google Search**
 
-📖 Theory
-<details> <summary>🔍 Why you start here</summary>
-
-The repository contains all workshop code, instructions, and configuration files.
-Starting here ensures everyone uses the same material, avoids mismatched versions, and keeps the hands-on flow smooth.
-
-</details>
-
 1. Visit **[https://www.google.com](https://www.google.com)**
 2. Search for **rahul shivalkar github**
 3. Open the GitHub profile shown in the results, go to Repositories.
