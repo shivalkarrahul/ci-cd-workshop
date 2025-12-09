@@ -10,7 +10,7 @@ Accessing the repository ensures everyone uses the same version of files, avoidi
 
 To start the workshop, we first need to access the repository containing all the files and instructions.
 
-### **Step — Using Google Search (Recommended for Beginners)**
+### **Using Google Search (Recommended for Beginners)**
 
 1. Open [Google](https://www.google.com).
 2. Search for: **`rahul shivalkar github`**
@@ -100,13 +100,13 @@ Using a dedicated server keeps deployment consistent and separate from local mac
 
 We will create **one build server** in the **N. Virginia (us-east-1)** region.
 
-### **Step 4.1 — Confirm AWS Region**
+### **4.1 — Confirm AWS Region**
 
 Ensure your AWS region is set to:
 
 **US East (N. Virginia) — us-east-1**
 
-### **Step 4.2 — Create the EC2 Instance**
+### **4.2 — Create the EC2 Instance**
 
 1. In the AWS Console, search for **EC2** and open it.
 
@@ -209,7 +209,7 @@ For this workshop, **we will use AWS CloudShell** to keep things simple.
 
 ---
 
-### **4.6 — Open AWS CloudShell**
+### **4.6. Open AWS CloudShell**
 
 1. On the AWS Console header, click the **CloudShell icon**
    (located near the **top center** of the page, slightly right of the search box).
@@ -224,7 +224,7 @@ For this workshop, **we will use AWS CloudShell** to keep things simple.
 
 ---
 
-### **4.7 — Upload Your .pem File**
+### **4.7. Upload Your .pem File**
 
 1. In CloudShell, click **Actions → Upload file**
 2. Select the key file you downloaded earlier:
@@ -235,7 +235,7 @@ For this workshop, **we will use AWS CloudShell** to keep things simple.
 
 ---
 
-### **4.8 — Set Correct File Permissions**
+### **4.8. Set Correct File Permissions**
 
 Run the following command in CloudShell:
 
@@ -247,7 +247,7 @@ This sets secure permissions required by SSH.
 
 ---
 
-### **4.9 — Connect to the ci-cd-workshop-build-server EC2 Instance**
+### **4.9. Connect to the ci-cd-workshop-build-server EC2 Instance**
 
 1. Open the **EC2 Console**
 2. Select your instance **ci-cd-workshop-build-server**
@@ -277,7 +277,7 @@ yes
 
 ![SSH into Build Server](artifacts/8-ssh-in-build-server.png)
 
-### **4.10 — Install AWS CLI on Build Server**
+### **4.10. Install AWS CLI on Build Server**
 
 ### 📖 Theory
 <details> <summary>⚙️ Why AWS CLI is needed</summary>
@@ -643,7 +643,7 @@ Your Backend Server is now accessible on port **5000**, which is required for th
 ![SG 22 & 5000 Rule](artifacts/10.2-sg-22-5000-rule.png)
 
 
-### **6.4 Connect to the ci-cd-workshop-backend-server EC2 Instance**
+### **6.4. Connect to the ci-cd-workshop-backend-server EC2 Instance**
 
 📌 Important:
 Before connecting, ensure you're working from AWS CloudShell, not from the ci-cd-workshop-build-server EC2 instance.
@@ -677,7 +677,7 @@ yes
 
 ![SSH into Build Server](artifacts/8-ssh-in-build-server.png)
 
-### **6.5 — Install AWS CLI on Build Server**
+### ** Pending - 6.5. — Install AWS CLI on Backend Server **
 
 Run the following commands on the build server:
 
@@ -706,7 +706,7 @@ aws --version
 ```
 ---
 
-### **6.6 Create Database Layer (DynamoDB)**
+### **6.6. Create Database Layer (DynamoDB)**
 
 We will create **two DynamoDB tables** to store all app data for the workshop:
 
@@ -739,7 +739,7 @@ We will create **two DynamoDB tables** to store all app data for the workshop:
 
 ---
 
-### **6.7 Create IAM Role for ci-cd-workshop-backend-server EC2**
+### **6.7. Create IAM Role for ci-cd-workshop-backend-server EC2**
 
 To allow the backend to access S3 and DynamoDB:
 
@@ -779,7 +779,7 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ---
 
-### **7.1 — Create GitHub Repositories**
+### **7.1. Create GitHub Repositories**
 
 1. Open your GitHub account: [https://github.com/](https://github.com/)
 2. Click **New**.
@@ -794,7 +794,7 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ---
 
-### **7.2 — Create GitHub Personal Access Token (PAT)**
+### **7.2. Create GitHub Personal Access Token (PAT)**
 
 1. Click your **profile picture → Settings → Developer settings → Personal access tokens → Tokens (classic)**
 2. Click **Generate new token → Generate new token (classic)**
@@ -813,7 +813,7 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ---
 
-### **7.3 — Connect to Build Server**
+### **7.3. Connect to Build Server**
 
 1. Open **CloudShell** from AWS Console:
 
@@ -833,7 +833,7 @@ cd ~/ci-cd-workshop
 
 ---
 
-### **7.4 — Configure Git (First Time Only)**
+### **7.4. Configure Git (First Time Only)**
 
 ```bash
 git config --global user.name "Your Name"
@@ -845,7 +845,7 @@ git config --global user.email "your-email@example.com"
 
 ---
 
-### **7.5 — Clone the Repositories Using HTTPS**
+### **7.5. Clone the Repositories Using HTTPS**
 
 Replace `<your-username>` with your GitHub username:
 
@@ -868,7 +868,7 @@ git clone https://github.com/<your-username>/ci-cd-workshop-backend.git
 
 ---
 
-### **7.6 — Download and Copy Workshop Files**
+### **7.6. Download and Copy Workshop Files**
 
 #### **Frontend Files**
 
@@ -895,7 +895,7 @@ wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backen
 
 ---
 
-### **7.7 — Commit and Push Changes**
+### **7.7. Commit and Push Changes**
 
 #### **Frontend Repo**
 
@@ -970,7 +970,7 @@ git push origin main
 
 ---
 
-### **7.8 — Verify on GitHub**
+### **7.8. Verify on GitHub**
 
 1. Open the repositories in your GitHub account:
 
@@ -1005,7 +1005,7 @@ In this step, we will **configure Jenkins** to automatically deploy the **fronte
 
 ---
 
-### **8.1 — Store SSH Key in Jenkins**
+### **8.1. Store SSH Key in Jenkins**
 
 We will use the **existing EC2 key pair** `ci-cd-workshop.pem` for backend deployment.
 
@@ -1033,7 +1033,7 @@ We will use the **existing EC2 key pair** `ci-cd-workshop.pem` for backend deplo
 
 ---
 
-### **8.2 — Create Jenkins Pipeline for Frontend**
+### **8.2. Create Jenkins Pipeline for Frontend**
 
 We will create a **frontend pipeline** that deploys the static site to S3 using a **parameterized bucket name**.
 
@@ -1058,7 +1058,7 @@ We will create a **frontend pipeline** that deploys the static site to S3 using 
 
 ---
 
-### **8.3 — Create Jenkins Pipeline for Backend**
+### **8.3. Create Jenkins Pipeline for Backend**
 
 We will create a **backend pipeline** that deploys the Python Flask app to the backend EC2 server using SSH.
 
@@ -1083,7 +1083,7 @@ We will create a **backend pipeline** that deploys the Python Flask app to the b
 
 ---
 
-### **8.4 — Configure GitHub Webhooks**
+### **8.4. Configure GitHub Webhooks**
 
 We will make Jenkins automatically trigger pipelines on **GitHub push**.
 
@@ -1109,7 +1109,7 @@ Repeat this for both the repos
 
 ---
 
-### **8.5 — Test Frontend Pipeline**
+### **8.5. Test Frontend Pipeline**
 
 1. Make a change to **frontend repo** (e.g., edit `frontend_version.json` and change the version).
 2. Push to GitHub from **build server**:
@@ -1153,7 +1153,7 @@ const API_BASE = "http://<your-backend-server-ip>:5000";
 
 ---
 
-### **8.6 — Test Backend Pipeline**
+### **8.6. Test Backend Pipeline**
 
 1. Make a change to **backend repo** (e.g., edit `backend_version.txt`).
 2. Push to GitHub from **build server**:
