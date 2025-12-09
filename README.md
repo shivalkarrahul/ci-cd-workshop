@@ -1,4 +1,118 @@
-# **ci-cd-workshop**
+## **ci-cd-workshop**
+
+## 📌 **Prerequisites**
+
+Before starting this workshop, ensure you have:
+
+* An active **AWS Account** with admin or equivalent permissions
+* Basic understanding of:
+
+  * Linux commands
+  * Git & GitHub
+  * CI/CD concepts (high-level is enough)
+* AWS services familiarity (nice to have):
+
+  * EC2
+  * S3
+  * IAM
+  * DynamoDB
+* A modern browser + stable internet
+* Ability to use:
+
+  * **AWS CloudShell**
+  * **SSH** into EC2
+  * **GitHub fork, clone, and push operations**
+
+---
+
+## 🎯 **Who This Guide Is For**
+
+This hands-on CI/CD workshop is built for:
+
+* Professionals exploring AWS CI/CD fundamentals
+* DevOps beginners learning end-to-end CI/CD pipelines
+* Students preparing for interviews or cloud practice
+* Developers wanting to automate deployments
+* Anyone who wants a **practical, working CI/CD pipeline** on AWS
+
+No prior CI/CD experience is required — everything is step-by-step.
+
+---
+
+## 🌍 **Region & Execution Guidelines**
+
+To avoid confusion and maintain consistency:
+
+* **All AWS resources must be created in the region:**
+  **US East (N. Virginia) — `us-east-1`**
+
+Why?
+
+* S3 static website hosting
+* AMI availability
+* DynamoDB consistency
+* Keeping screenshots and instructions aligned
+* Avoiding region mismatch issues during the workshop
+
+If you accidentally create resources in another region, you may experience:
+
+* S3 website not accessible
+* EC2 AMI not found
+* DynamoDB table not visible
+* IAM roles misconfigured
+
+So **ensure AWS Console is always set to `us-east-1`**.
+
+---
+
+## 🏗️ **Architecture Diagram — Architecture Overview**
+
+This workshop implements a **3-tier architecture with CI/CD automation**:
+
+
+### **Key Components**
+
+* **Build Server (EC2):** Runs Jenkins and automates deployments
+* **Frontend:** Hosted as a static site on **S3**
+* **Backend:** Runs on a **separate EC2 server**
+* **DynamoDB:** Stores assignment/submission data
+* **GitHub:** Single source of truth for both frontend & backend code
+
+You get a real, CI/CD workflow in a simplified, workshop-friendly environment.
+
+---
+
+## 🧪 **Hands-On Lab: CI/CD Workshop**
+
+In this lab, you will build an end-to-end CI/CD pipeline:
+
+### **You will create:**
+
+* 1× **Build Server (EC2) running Jenkins**
+* 1× **Backend Server (EC2)**
+* 1× **Frontend S3 Static Website**
+* 1× **DynamoDB Table**
+* Required IAM roles, policies & permissions
+* 1× **Backend Github Repo**
+* 1× **Frontend Github Repo**
+
+### **You will implement:**
+
+* Jenkins pipeline for **frontend**
+* Jenkins pipeline for **backend**
+* Automated deployment into S3
+* Automated SSH deployment to backend server
+* GitHub → Jenkins webhook integration
+* A working “Assignment Submission App” with live frontend → backend → DynamoDB flow
+
+Everything is hands-on.
+You will deploy actual code from the repo.
+
+---
+
+## 🚀 **Let’s Get Started!**
+
+---
 
 ## **1. Access the Workshop Repository**
 
