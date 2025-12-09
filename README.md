@@ -2,9 +2,24 @@
 
 ## **1. Access the Workshop Repository**
 
+### 📖 Theory
+<details> <summary>🔗 Why we need the repository</summary>
+The workshop repository contains all pre-written code, configuration files, and instructions required to follow along.  
+Accessing the repository ensures everyone uses the same version of files, avoiding inconsistencies and errors during the CI/CD setup.
+</details>
+
+
 You can open the CI/CD Workshop repository in any of the following ways:
 
 ### **Method 1: Google Search**
+
+📖 Theory
+<details> <summary>🔍 Why you start here</summary>
+
+The repository contains all workshop code, instructions, and configuration files.
+Starting here ensures everyone uses the same material, avoids mismatched versions, and keeps the hands-on flow smooth.
+
+</details>
 
 1. Visit **[https://www.google.com](https://www.google.com)**
 2. Search for **rahul shivalkar github**
@@ -23,6 +38,13 @@ You can open the CI/CD Workshop repository in any of the following ways:
 
 ## **2. Create or Sign In to Your AWS Account**
 
+### 📖 Theory
+<details> <summary>☁️ AWS Account Essentials</summary>
+AWS provides the infrastructure needed to host and deploy your CI/CD workshop app.  
+An account gives access to services like EC2, S3, and DynamoDB, which are required for the frontend, backend, and database layers of the application.
+</details>
+
+
 1. Open: **[https://aws.amazon.com/console/](https://aws.amazon.com/console/)**
 2. If you don’t have an account → **Create a new AWS account**
 3. If you already have one → **Sign In**
@@ -31,6 +53,13 @@ You can open the CI/CD Workshop repository in any of the following ways:
 ---
 
 ## **3. Create or Sign In to Your GitHub Account**
+
+### 📖 Theory
+<details> <summary>🐙 Version Control with GitHub</summary>
+GitHub hosts your application code and enables version control.  
+By committing and pushing code, you can track changes, collaborate, and integrate it with Jenkins pipelines for automated CI/CD deployment.
+</details>
+
 
 1. Open: **[https://github.com/](https://github.com/)**
 2. If you don’t have an account → **Sign up**
@@ -41,6 +70,14 @@ You can open the CI/CD Workshop repository in any of the following ways:
 ---
 
 ## **4. Launch the Build Server (EC2 Instance)**
+
+### 📖 Theory
+<details> <summary>🖥️ Purpose of the Build Server</summary>
+The build server (EC2 instance) acts as the CI/CD orchestrator.  
+It runs Jenkins, pulls code from GitHub, and automates deployment for both frontend and backend components.  
+Using a dedicated server keeps deployment consistent and separate from local machines.
+</details>
+
 
 We will create **one build server** in the **N. Virginia (us-east-1)** region.
 
@@ -97,6 +134,14 @@ Ensure your AWS region is set to:
 
 ## **4.1 Create IAM Role for Build Server EC2**
 
+### 📖 Theory
+<details> <summary>🔑 IAM Role for Secure Access</summary>
+An IAM role grants the EC2 build server the permissions it needs to interact with AWS resources.  
+For this workshop, the role allows the build server to access S3 for frontend deployments.  
+Roles eliminate the need to store credentials on the server itself.
+</details>
+
+
 To allow the backend to access S3 :
 
 
@@ -112,10 +157,26 @@ To allow the backend to access S3 :
 7. Create role
 
 ## **4.2 Attach the IAM Role to Build Server EC2 Instance**
+
+### 📖 Theory
+<details> <summary>🔗 Linking Role to EC2</summary>
+Attaching the IAM role to the EC2 instance enables the server to assume the role and gain the permissions defined earlier.  
+This is required for Jenkins pipelines to deploy the frontend to S3 without manually providing AWS credentials.
+</details>
+
+
 1. Go to **EC2 → Instances → Select ci-cd-workshop-build-server → Actions → Security → Modify IAM Role → Search and Select `ci-cd-workshop-build-server-role` → Click Update IAM role**
 
 
 ## **5. Connect to the Build Server (EC2 Instance)**
+
+### 📖 Theory
+<details> <summary>🔐 Secure Connection Methods</summary>
+SSH allows secure remote access to the build server.  
+Using AWS CloudShell simplifies the connection process, as it works directly from the browser and supports the `.pem` key.  
+Once connected, you can run commands, install Jenkins, and manage deployments.
+</details>
+
 
 When launching the EC2 instance earlier, we downloaded a **.pem** key pair file.
 This key is required to securely connect to the server.
@@ -201,6 +262,12 @@ yes
 
 ### **Step 5.5 — Install AWS CLI on Build Server**
 
+### 📖 Theory
+<details> <summary>⚙️ Why AWS CLI is needed</summary>
+The AWS CLI allows the build server to interact with AWS services like S3 and EC2 programmatically.  
+It is essential for pipelines to automate deployments, create resources, and manage AWS infrastructure without manually using the console.
+</details>
+
 Run the following commands on the build server:
 
 ```bash
@@ -232,6 +299,13 @@ aws --version
 ---
 
 ## **6. Install Jenkins on the Build Server (EC2 Instance)**
+
+### 📖 Theory
+<details> <summary>🧩 Jenkins for CI/CD</summary>
+Jenkins is a continuous integration/continuous deployment (CI/CD) tool that automates building, testing, and deploying code.  
+Installing it on the build server allows automated pipelines for both frontend and backend projects, triggered on GitHub commits.
+</details>
+
 
 Follow the steps below on your EC2 build server after connecting through CloudShell.
 
@@ -383,6 +457,13 @@ Here is **Step 10** written clearly and professionally in the same workshop styl
 
 ### **10. Complete Jenkins Initial Setup**
 
+### 📖 Theory
+<details> <summary>🔧 Configuring Jenkins</summary>
+The initial setup configures Jenkins with suggested plugins, unlocks the admin account, and prepares it for pipelines.  
+The SSH Agent Plugin allows Jenkins to securely connect to backend EC2 servers via SSH, enabling automated backend deployments.
+</details>
+
+
 After unlocking Jenkins, you will see the setup wizard. Follow these steps:
 
 1. **Install Suggested Plugins**
@@ -482,6 +563,18 @@ This plugin enables the `sshagent { ... }` syntax used in the backend Jenkinsfil
 ---
 
 ## **7. Create Infrastructure for 3-Tier App**
+
+### 📖 Theory
+<details> <summary>🏗️ Three-Tier Architecture</summary>
+The workshop app uses a 3-tier architecture:
+
+1. **Frontend (S3)** – Serves static website content.
+2. **Backend (EC2)** – Hosts the Python Flask application.
+3. **Database (DynamoDB)** – Stores assignments and submissions.
+
+Separating these layers improves scalability, maintainability, and deployment automation.
+</details>
+
 
 Before we deploy our code, we need to create the **infrastructure** where the app will run. This includes:
 
@@ -732,6 +825,13 @@ To allow the backend to access S3 and DynamoDB:
 
 ## **8. Set Up GitHub Repositories and Push Workshop Files**
 
+### 📖 Theory
+<details> <summary>💾 Code Management and Versioning</summary>
+Repositories provide a structured location for code and allow tracking changes over time.  
+By cloning, committing, and pushing files from the build server, you ensure that Jenkins pipelines can pull the latest code for automated deployment.
+</details>
+
+
 In this step, we will **create GitHub repositories**, clone them on the **build server**, copy the prepared workshop files, commit, and push them to GitHub using a **Personal Access Token (PAT)**.
 
 > ⚠️ All commands should be run **on the build server** using CloudShell or SSH.
@@ -949,6 +1049,17 @@ git push origin main
 
 ## **9. Configure Jenkins Pipelines & Deployment (CI/CD Automation)**
 
+### 📖 Theory
+<details> <summary>🚀 Automating Deployment</summary>
+Jenkins pipelines automate the deployment of frontend and backend code:
+
+- **Frontend:** Deployed to S3 bucket.
+- **Backend:** Deployed to EC2 via SSH.
+
+GitHub webhooks trigger pipelines on every push, ensuring the application is always up-to-date without manual intervention.
+</details>
+
+
 In this step, we will **configure Jenkins** to automatically deploy the **frontend** to S3 and the **backend** to the backend EC2 server whenever code is pushed to GitHub. We will also store the existing EC2 key pair in Jenkins for secure SSH access.
 
 > ⚠️ All commands and steps are performed on the **build server** via CloudShell or SSH.
@@ -1144,7 +1255,14 @@ git push origin main
 ---
 
 
-## **Pending. Cleanup**
+## **Cleanup**
+
+### 📖 Theory
+<details> <summary>🧹 Cleaning Up Resources</summary>
+The cleanup script removes all workshop resources: EC2 instances, S3 buckets, DynamoDB tables, IAM roles, and security groups.  
+This ensures no lingering costs or unnecessary AWS resources after the workshop.
+</details>
+
 
 Below is **a full cleanup script for ALL your workshop resources**, written exactly in **your variable style**, using **filters by Name**, and **NO paging (`--no-cli-pager`)**, so **you will NEVER be asked to press `q`**.
 
