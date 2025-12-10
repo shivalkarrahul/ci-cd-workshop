@@ -1609,6 +1609,13 @@ aws ec2 terminate-instances \
     --no-cli-pager
 ```
 
+```bash
+aws ec2 wait instance-terminated \
+    --instance-ids $BUILD_INSTANCE_ID $BACKEND_INSTANCE_ID \
+    --region $REGION \
+    --no-cli-pager
+```
+
 ---
 
 #### 🧹 **9.2.4. Delete Security Groups**
@@ -1741,7 +1748,7 @@ aws iam detach-role-policy \
 aws iam remove-role-from-instance-profile \
     --instance-profile-name $BUILD_INSTANCE_PROFILE \
     --role-name $BUILD_SERVER_ROLE \
-    --no-cli-pager
+    --no-cli-pager    
 ```
 
 ### **9.6.4. Delete instance profile**
