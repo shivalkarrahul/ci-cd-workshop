@@ -1767,3 +1767,32 @@ aws iam delete-role \
     --no-cli-pager
 ```
 
+Here’s a clean, ready-to-add section explaining how to delete GitHub repositories from the GitHub console:
+
+---
+
+## **9.7. Delete GitHub Repositories**
+
+As you created the **frontend** and **backend** repositories only for this workshop, you can delete them from the **GitHub Console** if you want.
+
+#### **Steps to Delete a GitHub Repository**
+
+1. Open GitHub and go to the repository you want to delete
+   (e.g., `ci-cd-workshop-frontend` or `ci-cd-workshop-backend`).
+
+2. Click **Settings** (top menu of the repository).
+
+3. Scroll to the very bottom to the **Danger Zone** section.
+
+4. Click **Delete this repository**.
+
+5. GitHub will ask you to type the repository name for confirmation
+   (example: `<user-name>/ci-cd-workshop-frontend`).
+
+6. Click **I understand the consequences, delete this repository**.
+
+You can repeat the same steps for both **frontend** and **backend** repos if you no longer need them.
+
+---
+
+If you want, I can also add screenshots or make the wording more aligned with the rest of your workshop document.
