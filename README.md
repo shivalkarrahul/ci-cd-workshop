@@ -911,6 +911,10 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ### **7.1. Create GitHub Repositories**
 
+For this workshop, we will create **public** repositories so Jenkins can easily access them.
+➡️ *In real organizations, repositories are usually **private** for security and compliance.*
+
+
 1. Open your GitHub account: [https://github.com/](https://github.com/)
 2. Click **New**.
 3. Create **two repositories**:
@@ -926,7 +930,7 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 ### **7.2. Create GitHub Personal Access Token (PAT)**
 
-1. Click your **profile picture → Settings → Developer settings → Personal access tokens → Tokens (classic)**
+1. Click your **Profile Picture in top-right corner  → Settings → Developer settings → Personal access tokens → Tokens (classic)**
 2. Click **Generate new token → Generate new token (classic)**
 3. Give a **note/name**: `ci-cd-workshop-token`
 4. Select **expiration** (e.g., 90 days)
@@ -947,6 +951,12 @@ In this step, we will **create GitHub repositories**, clone them on the **build 
 
 1. Open **CloudShell** from AWS Console:
 
+Important: Before proceeding, remember:
+
+The aim of the following steps is to clone your frontend and backend repositories, add the required workshop code and Jenkinsfiles that are provided in this main repository, and push them back to your GitHub repos.
+
+You can perform these steps from any machine, including your laptop. We use the build server here only for convenience.
+
 ```bash
 ssh -i ci-cd-workshop.pem ubuntu@<BUILD-SERVER-PUBLIC-IP>
 ```
@@ -965,12 +975,14 @@ cd ~/ci-cd-workshop
 
 ### **7.4. Configure Git (First Time Only)**
 
+Replace **`<Your Name>`** and **`<your-email@example.com>`** with your actual details:
+
 ```bash
-git config --global user.name "Your Name"
+git config --global user.name "<Your Name>"
 ```
 
 ```bash
-git config --global user.email "your-email@example.com"
+git config --global user.email "<your-email@example.com>"
 ```
 
 ---
@@ -989,8 +1001,6 @@ git clone https://github.com/<your-username>/ci-cd-workshop-frontend.git
 git clone https://github.com/<your-username>/ci-cd-workshop-backend.git
 ```
 
-> When prompted for username and password, **use your GitHub username** and **Personal Access Token** as password.
-
 ![Clone Github Repos](artifacts/13-clone-repo.png)
 
 ![Clone Output](artifacts/14-clone-output.png)
@@ -1004,22 +1014,39 @@ git clone https://github.com/<your-username>/ci-cd-workshop-backend.git
 
 ```bash
 cd ~/ci-cd-workshop/ci-cd-workshop-frontend
+```
 
+```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/index.html
+```
+
+```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/frontend_version.json
+```
+
+```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/Jenkinsfile
-
-
 ```
 
 #### **Backend Files**
 
 ```bash
 cd ~/ci-cd-workshop/ci-cd-workshop-backend
+```
 
+```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/app.py
+```
+
+```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/backend_version.txt
+```
+
+```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/requirements.txt
+```
+
+```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/Jenkinsfile
 ```
 
@@ -1057,6 +1084,11 @@ git commit -m "Initial commit: workshop frontend files"
 git push origin main
 ```
 
+> During `git push`, Git will prompt for credentials:
+>
+> * **Username:** GitHub username
+> * **Password:** Personal Access Token (PAT) created earlier
+
 ![Push to Fronend Repo](artifacts/15.1-push-to-frontend-repo.png)
 
 #### **Backend Repo**
@@ -1089,14 +1121,12 @@ git commit -m "Initial commit: workshop backend files"
 git push origin main
 ```
 
-![Push to Backend Repo](artifacts/15.1-push-to-backend-repo.png)
-
-
-
 > During `git push`, Git will prompt for credentials:
 >
 > * **Username:** GitHub username
 > * **Password:** Personal Access Token (PAT) created earlier
+
+![Push to Backend Repo](artifacts/15.1-push-to-backend-repo.png)
 
 ---
 
