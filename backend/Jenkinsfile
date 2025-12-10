@@ -67,26 +67,26 @@ pipeline {
             }
         }
         
-stage('Stop Existing Backend') {
-    steps {
-        sshagent (credentials: [env.SSH_CREDENTIALS]) {
-            sh """
-                ssh -o StrictHostKeyChecking=no ubuntu@${BACKEND_SERVER_IP} << 'EOF'
-cd ${DEPLOY_DIR}
+        stage('Stop Existing Backend') {
+            steps {
+                sshagent (credentials: [env.SSH_CREDENTIALS]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@${BACKEND_SERVER_IP} << 'EOF'
+                        cd ${DEPLOY_DIR}
 
-if pgrep -f app.py > /dev/null; then
-    echo "Stopping running backend app..."
-    pkill -f app.py
-else
-    echo "No running backend app found."
-fi
-EOF
-            """
+                        if pgrep -f app.py > /dev/null; then
+                            echo "Stopping running backend app..."
+                            pkill -f app.py
+                        else
+                            echo "No running backend app found."
+                        fi
+                        EOF
+                                    """
+                }
+            }
         }
-    }
-}
 
-stage('Start Backend') {
+        stage('Start Backend') {
             steps {
                 sshagent (credentials: [env.SSH_CREDENTIALS]) {
                     sh '''
@@ -97,11 +97,11 @@ stage('Start Backend') {
                             nohup python3 app.py > backend.log 2>&1 &
                         "
                     '''
-                }
+                }   
             }
         }
 
-stage('Read Backend Version') {
+        stage('Read Backend Version') {
             steps {
                 sshagent (credentials: [env.SSH_CREDENTIALS]) {
                     sh '''
@@ -111,9 +111,6 @@ stage('Read Backend Version') {
                 }
             }
         }
-
-    
-
 
     }
 

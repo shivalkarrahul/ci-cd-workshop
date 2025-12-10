@@ -137,8 +137,6 @@ To start the workshop, we first need to access the repository containing all the
 
 ![GitHub Repo List](artifacts/1-github-repo-list.png)
 
-Here’s a refined, beginner-friendly version of your section with a slightly smoother flow and clearer explanation:
-
 ---
 
 ## **2. Create or Sign In to Your AWS Account**
@@ -166,10 +164,6 @@ Having an account ensures you can create, manage, and deploy resources needed fo
 > 💡 **Tip for Beginners:** Make sure you note down your account email and password, as you’ll need them throughout the workshop.
 
 ![AWS Console](artifacts/2-aws-console.png)
-
----
-
-Here’s a refined, beginner-friendly version of your GitHub section:
 
 ---
 
@@ -277,15 +271,15 @@ Roles eliminate the need to store credentials on the server itself.
 To allow the backend to access S3 :
 
 1. Go to **AWS Console → IAM**: [https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/home](https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/home)
-2. Role
+2. Click **Roles** in the left-hand menu.
 3. Click **Create role**
-4. Choose **EC2** as the Service or use case →  Next
+4. Choose **EC2** as the **Service or use case** →  Next
 
-5. Search and Attach the following policies →  Next
+5. Search and Select the following policies to attach it to the role →  Next
 
    * `AmazonS3FullAccess`
 6. Name the role: `ci-cd-workshop-build-server-role`
-7. Create role
+7. Click **Create role**
 
 ### **4.4. Attach the IAM Role to Build Server EC2 Instance**
 
@@ -425,7 +419,29 @@ sudo ./aws/install
 aws --version
 ```
 
-✅ After this, the `aws` command is available and pipelines can use it to deploy the frontend to S3.
+This confirms that the AWS CLI is installed.
+
+Next, run the following command to verify that the **IAM role is correctly attached** to the EC2 instance:
+
+```bash
+aws sts get-caller-identity
+```
+
+If everything is configured properly, you will see output similar to:
+
+```json
+{
+    "UserId": "ARO********FWTVQ:i-0b85*********e0945",
+    "Account": "************",
+    "Arn": "arn:aws:sts::************:assumed-role/ci-cd-workshop-build-server-role/i-0b85*********e0945"
+}
+```
+
+This means:
+
+* The EC2 instance is **successfully assuming the IAM role** (`ci-cd-workshop-build-server-role`).
+* Jenkins pipelines running on this instance can now use AWS CLI commands.
+* This enables automatic **frontend deployment to S3** and other AWS actions.
 
 ---
 
@@ -446,6 +462,9 @@ Follow the steps below on your EC2 build server after connecting through CloudSh
 
 ```bash
 sudo apt update
+```
+
+```bash
 sudo apt install openjdk-17-jdk -y
 ```
 
@@ -498,6 +517,7 @@ sudo systemctl status jenkins
 ```
 
 You should see **active (running)**.
+Press **q** to exit the status screen.
 
 ---
 
@@ -570,7 +590,7 @@ Run the following command in CloudShell (already connected to your EC2 instance)
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 
-Copy the displayed password and paste it into the Jenkins unlock screen.
+Copy the displayed password and paste it into the Jenkins unlock screen and cick on **Continue**.
 
 
 After unlocking Jenkins, you will see the setup wizard. Follow these steps:
@@ -596,25 +616,22 @@ You will now be taken to the Jenkins dashboard.
 
 ![Jenkins UI](artifacts/10-jenkins-ui.png)
 
-Jenkins will automatically begin installing the recommended plugins.
-(This may take a few minutes.)
-
 ### **5.5. Install Required Plugin — SSH Agent Plugin**
 
 The backend pipeline uses the `sshagent` step for SSH-based deployment.
 To enable it, you must install the **SSH Agent Plugin**.
 
 1. From the Jenkins dashboard → Click **Manage Jenkins**
+   *(Gear icon at the top right, just before your profile icon)*
 2. Click **Plugins**
 3. Go to the **Available Plugins** tab
-4. Search for:
+4. Search and Select:
 
 ```
 SSH Agent
 ```
 
-5. Install **SSH Agent Plugin**
-6. Restart Jenkins when prompted
+5. Click on **Install**
 
 This plugin enables the `sshagent { ... }` syntax used in the backend Jenkinsfile.
 
@@ -643,10 +660,6 @@ Before we deploy our code, we need to create the **infrastructure** where the ap
 3. **Database** → DynamoDB table
 
 Let’s create them step by step.
-
----
-
-Got it! Here’s a **single-step version** that includes bucket creation, static website hosting, and the public access policy:
 
 ---
 
@@ -704,12 +717,15 @@ Our backend Flask app will run on an EC2 instance.
    * **Name:** `ci-cd-workshop-backend-server`
    * **AMI:** Ubuntu Server 24.04 LTS (HVM), SSD Volume Type
    * **Instance type:** t2.medium
-   * **Key pair:** Select an existing `ci-cd-workshop`
-   * **Network / Security group:**
+   * **Key pair:** Search and select an existing `ci-cd-workshop`
 
-     * Allow **SSH (22)** from **Anywhere (0.0.0.0/0)**
+   * **Network Settings:**
 
-       > ⚠ Not recommended for production, but fine for our workshop
+     * Select **Create security group**
+     * Allow SSH (port 22) from **Anywhere (0.0.0.0/0)**
+     * ⚠️ **This is NOT recommended for production.**
+       For demo and workshop purposes, we are allowing open SSH access to avoid connection issues.
+
    * **Storage:** 20 GB
    * **Number of instances:** 1
 4. Click **Launch instance**
@@ -761,7 +777,7 @@ Your Backend Server is now accessible on port **5000**, which is required for th
 
 📌 Important:
 Before connecting, ensure you're working from AWS CloudShell, not from the ci-cd-workshop-build-server EC2 instance.
-If unsure, simply close CloudShell and reopen it—this will start a fresh CloudShell session.
+If unsure, simply type **exit** to start a fresh CloudShell session.
 
 1. Open the **EC2 Console**
 2. Select your instance **ci-cd-workshop-backend-server**
@@ -787,9 +803,9 @@ yes
 
 ---
 
-#### You are now inside the Build Server.
+#### You are now inside the Backend Server.
 
-![SSH into Build Server](artifacts/8-ssh-in-build-server.png)
+![SSH into Backend Server](artifacts/10.3-ssh-in-backend-server.png)
 
 ### ** Pending - 6.5. Install AWS CLI on Backend Server **
 
@@ -859,11 +875,11 @@ To allow the backend to access S3 and DynamoDB:
 
 
 1. Go to **AWS Console → IAM**: [https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/home](https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/home)
-2. Role
+2. Click **Roles** in the left-hand menu.
 3. Click **Create role**
 4. Choose **EC2** as the Service or use case →  Next
 
-5. Search and Attach the following policies →  Next
+5. Search and Select the following policies to attach it to the role →  Next
 
    * `AmazonS3FullAccess`
    * `AmazonDynamoDBFullAccess`
