@@ -1085,7 +1085,7 @@ Download:
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/app.py
 ```
 
-### **2. `backend_version.txt` — Backend Version Tracking**
+#### **2. `backend_version.txt` — Backend Version Tracking**
 
 This file stores the backend version.
 It helps confirm if the backend deployment on EC2 updated successfully.
