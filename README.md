@@ -1792,7 +1792,3 @@ As you created the **frontend** and **backend** repositories only for this works
 6. Click **I understand the consequences, delete this repository**.
 
 You can repeat the same steps for both **frontend** and **backend** repos if you no longer need them.
-
----
-
-If you want, I can also add screenshots or make the wording more aligned with the rest of your workshop document.
