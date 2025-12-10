@@ -795,7 +795,7 @@ When asked:
 Are you sure you want to continue connecting (yes/no/[fingerprint])?
 ```
 
-Type:
+Type and enter:
 
 ```
 yes
@@ -807,34 +807,30 @@ yes
 
 ![SSH into Backend Server](artifacts/10.3-ssh-in-backend-server.png)
 
-### ** Pending - 6.5. Install AWS CLI on Backend Server **
+### ** 6.5. Install Python venv **
 
-Run the following commands on the build server:
+Run the following commands on the backend server:
 
 ```bash
-sudo apt update -y
+sudo apt-get update
 ```
 
 ```bash
-sudo apt install unzip curl -y
+sudo apt install python3.12-venv
 ```
 
-```bash
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+When asked:
+
+```
+Do you want to continue? [Y/n] Y
 ```
 
-```bash
-unzip awscliv2.zip
+Type and enter:
+
+```
+yes
 ```
 
-```bash
-sudo ./aws/install
-```
-
-```bash
-aws --version
-```
----
 
 ### **6.6. Create Database Layer (DynamoDB)**
 
@@ -1169,11 +1165,27 @@ In this step, we will **configure Jenkins** to automatically deploy the **fronte
 
 We will use the **existing EC2 key pair** `ci-cd-workshop.pem` for backend deployment.
 
+### **Open Your Jenkins Dashboard**
+
+
+
 1. Open your **Jenkins Dashboard** in browser:
+
+Open the Jenkins dashboard in your browser using the public IP of your Jenkins server.
 
    ```
    http://<build-server-public-ip>:8080
    ```
+
+If you are logged out, sign back in using:
+
+* **Username:** `admin`
+* **Password:** The Jenkins initial admin password you retrieved earlier using the following command on **ci-cd-workshop-build-server**:
+
+  ```bash
+  sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+  ```
+
 2. Go to **Manage Jenkins(Gear Icon in right top corner) → Credentials → System → Global credentials → Add Credentials**.
 3. Open `ci-cd-workshop.pem` in notepad/textpad on your local machine and copy the content
 4. Select:
@@ -1200,7 +1212,7 @@ We will create a **frontend pipeline** that deploys the static site to S3 using 
 1. In Jenkins Dashboard → **New Item**.
 2. Enter **Item Name:** `frontend-deploy`
 3. Select **Pipeline** → Click **OK**.
-4. General → Tick **GitHub project**, Checkbox and add repo URL in Project url.
+4. General → Tick **GitHub project**, Checkbox and add Frontend Repo URL in Project url.
 5. Triggers → Tick **GitHub hook trigger for GITScm polling** Checkbox
 6. Scroll to **Pipeline section → Definition:** `Pipeline script from SCM`.
 7. Select **Git** → Repository URL:
@@ -1225,7 +1237,7 @@ We will create a **backend pipeline** that deploys the Python Flask app to the b
 1. In Jenkins Dashboard → **New Item**.
 2. Enter **Item Name:** `backend-deploy`
 3. Select **Pipeline** → Click **OK**.
-4. General → Tick **GitHub project**, Checkbox and add repo URL in Project url.
+4. General → Tick **GitHub project**, Checkbox and add Backend Repo URL in Project url.
 5. Triggers → Tick **GitHub hook trigger for GITScm polling** Checkbox
 6. Scroll to **Pipeline section → Definition:** `Pipeline script from SCM`.
 7. Select **Git** → Repository URL:
@@ -1271,11 +1283,73 @@ Repeat this for both the repos
 
 ### **8.5. Test Frontend Pipeline**
 
-1. Make a change to **frontend repo** (e.g., edit `frontend_version.json` and change the version).
-2. Push to GitHub from **build server**:
+The purpose of the following steps is to make small changes to your **frontend** and **backend** repositories, commit them, and push them to GitHub.
+
+You can perform these changes from **any machine** (your laptop, CloudShell, or build server).
+Here we use the **build server** only for convenience.
+
+
+#### **8.5.1. Modify the Frontend Repository**
+
+Navigate to the frontend directory:
 
 ```bash
 cd ~/ci-cd-workshop/ci-cd-workshop-frontend
+```
+
+**Update `frontend_version.json`**
+
+```bash
+vim frontend_version.json
+```
+
+* Press **i** → edit the version
+* Press **Esc**, type **:wq!**, press **Enter**
+
+**Update `Jenkinsfile`**
+
+```bash
+vim Jenkinsfile
+```
+
+Find the parameter:
+
+```
+ci-cd-workshop-frontend-<your-name>
+```
+
+Replace it with **your actual S3 bucket name**.
+
+* Press **i** → edit the version
+* Press **Esc**, type **:wq!**, press **Enter**
+
+**Update `index.html`**
+
+Edit using:
+
+```bash
+vim index.html
+```
+
+Look for:
+
+```js
+const API_BASE = "http://127.0.0.1:5000";
+```
+
+Replace with:
+
+```js
+const API_BASE = "http://<your-backend-server-public-ip>:5000";
+```
+
+* Press **i** → edit the version
+* Press **Esc**, type **:wq!**, press **Enter**
+
+#### **8.5.2. Commit and Push the Frontend Changes**
+
+```bash
+git status
 ```
 
 ```bash
@@ -1290,36 +1364,73 @@ git commit -m "Test frontend update"
 git push origin main
 ```
 
-3. Open Jenkins → **frontend-deploy pipeline** → check **Builds**.
-4. The first time it will fail, as the "S3_BUCKET" parameter contains the default value.
-5. Edit the Jenkinsfile and update the parameter value to your actual bucket. Change value of **Default Value** from **ci-cd-workshop-frontend-<your-name>** to your bucket name.
-6. Update your `index.html` file to point to your backend server’s public IP:
-   Find this line:
+> During `git push`, Git will prompt for credentials:
+>
+> * **Username:** GitHub username
+> * **Password:** Personal Access Token (PAT) created earlier
 
-```js
-const API_BASE = "http://127.0.0.1:5000";
-```
+#### **8.5.3. Verify the Frontend Pipeline**
 
-Replace it with:
-
-```js
-const API_BASE = "http://<your-backend-server-ip>:5000";
-```
-
-7. Then **add → commit → push** again.
-8. Verify pipeline runs successfully and static site is deployed to S3.
+1. Open Jenkins → **frontend-deploy pipeline** → check **Builds**.
+2. If successful, Jenkins will upload your updated frontend to S3.
 
 ![Frontend Jenkinspipeline Success](artifacts/19-frontend-jenkinspipeline-success.png)
+
+#### **8.5.4. Validate the Deployed Frontend**
+
+1. Go to **S3 → Your Bucket → Properties**
+2. Open **Static Website Hosting**
+3. Click the **Bucket Website Endpoint** URL
+
+If the app loads and shows:
+**“Frontend Version: <your version>”**,
+the deployment is successful.
+
+![Frontend Change Deployed](artifacts/19.1-frontend-change-deployed.png)
 
 ---
 
 ### **8.6. Test Backend Pipeline**
 
-1. Make a change to **backend repo** (e.g., edit `backend_version.txt`).
-2. Push to GitHub from **build server**:
+#### **8.6.1. Modify the Backend Repository**
+
+Navigate to the backend directory:
 
 ```bash
 cd ~/ci-cd-workshop/ci-cd-workshop-backend
+```
+
+**Update `backend_version.txt`**
+
+```bash
+vim backend_version.txt
+```
+* Press **i** → edit the version
+* Press **Esc**, type **:wq!**, press **Enter**
+
+**Update `Jenkinsfile`**
+
+Open
+
+```bash
+vim Jenkinsfile
+```
+
+Update the parameter:
+
+```
+<backend-server-ip>
+```
+
+Replace with your backend EC2 **public IP address**.
+
+* Press **i** → edit the version
+* Press **Esc**, type **:wq!**, press **Enter**
+
+#### **8.6.2. Commit and Push the Backend Changes**
+
+```bash
+git status
 ```
 
 ```bash
@@ -1334,20 +1445,49 @@ git commit -m "Test backend update"
 git push origin main
 ```
 
-3. Open Jenkins → **frontend-deploy pipeline** → check **Builds**.
-4. The first time it will fail, as the "BACKEND_SERVER_IP" parameter contains the default value.
-5. Edit the Jenkinsfile and update the parameter value to your actual backend-server-ip. Change value of **Default Value** from **<backend-server-ip>** to your backend-server-ip public IP.
-5. Also make a small change and follow the above steps to add, commit and push
-4. Verify pipeline runs successfully and static site is deployed to S3.
+> During `git push`, Git will prompt for credentials:
+>
+> * **Username:** GitHub username
+> * **Password:** Personal Access Token (PAT) created earlier
+
+#### **8.6.3. Verify the Backend Pipeline**
+
+Open Jenkins → **backend-deploy** → verify the latest execution.
+
+This should:
+
+* Connect over SSH
+* Install dependencies
+* Restart the backend server
+* Run your updated backend API
 
 ![Backend Jenkinspipeline Success](artifacts/20-backend-jenkinspipeline-success.png)
 
-### **Congratulations!**
+#### **8.6.4. Validate Backend Deployment**
 
-* Frontend and backend are now fully automated using **Jenkins pipelines**.
-* **GitHub webhooks** trigger CI/CD whenever you push new code.
-* Backend deploys via **SSH** using the existing EC2 key pair.
-* Frontend deploys to **S3 bucket** using the parameterized Jenkinsfile.
+Open your S3 hosted frontend website again.
+
+If you see:
+
+**“Backend Version: <your version>”**,
+and API calls work (Create, Submit, List Assignments),
+your backend deployment is successful.
+
+![Backend Change Deployed](artifacts/20.1-backend-change-deployed.png)
+
+### 🏆 **Congratulations — CI/CD Fully Working!**
+
+You now have:
+
+✅ Automated **frontend CI/CD**
+— GitHub → Jenkins → S3 → Static Website Hosting
+
+✅ Automated **backend CI/CD**
+— GitHub → Jenkins → SSH → EC2 Deployment
+
+✅ GitHub Webhooks triggering pipelines on every push
+
+Your environment is now running a **complete CI/CD pipeline** for a live full-stack application.
 
 ---
 
