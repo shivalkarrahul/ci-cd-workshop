@@ -901,7 +901,7 @@ By cloning, committing, and pushing files from the build server, you ensure that
 
 In this step, we will **create GitHub repositories**, clone them on the **build server**, copy the prepared workshop files, commit, and push them to GitHub using a **Personal Access Token (PAT)**.
 
-> ⚠️ All commands should be run **on the build server** using CloudShell or SSH.
+> ⚠️ All commands should be run **on the build server** using CloudShell
 
 ---
 
@@ -1006,19 +1006,55 @@ git clone https://github.com/<your-username>/ci-cd-workshop-backend.git
 
 ### **7.6. Download and Copy Workshop Files**
 
+In this step, you will download the required frontend and backend application files into your GitHub repositories.
+These files are already prepared in the main workshop repo and need to be copied into your cloned frontend/backed repos so that Jenkins can build and deploy them.
+
 #### **Frontend Files**
+
+Navigate to your frontend repo:
 
 ```bash
 cd ~/ci-cd-workshop/ci-cd-workshop-frontend
 ```
 
+Below are the files you will download and why each is needed:
+
+#### **1. `index.html` — The Frontend Application**
+
+This is the main UI of the Assignment Tracker application.
+It contains:
+
+* The HTML layout
+* JavaScript functions to call the backend API
+* Logic to display Assignment lists and versions
+
+Download:
+
 ```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/index.html
 ```
 
+#### **2. `frontend_version.json` — Frontend Version Tracking**
+
+This file contains a simple JSON with a version number.
+It helps verify whether the frontend deployment updated successfully in S3.
+
+Download:
+
 ```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/frontend_version.json
 ```
+
+#### **3. `Jenkinsfile` — CI/CD Pipeline for Frontend**
+
+This Jenkinsfile defines:
+
+* How the frontend should be built
+* How files are uploaded to S3
+* Which S3 bucket to deploy to
+* Pipeline stages and parameters
+
+Download:
 
 ```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/frontend/Jenkinsfile
@@ -1026,21 +1062,61 @@ wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/fronte
 
 #### **Backend Files**
 
+Navigate to your backend repo:
+
 ```bash
 cd ~/ci-cd-workshop/ci-cd-workshop-backend
 ```
+
+Below are the backend files and their purpose:
+
+#### **1. `app.py` — Backend Flask Application**
+
+This is the core Python backend service.
+It provides:
+
+* API endpoints for assignments
+* Logic to submit, list, and create assignments
+* Version info endpoint
+
+Download:
 
 ```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/app.py
 ```
 
+### **2. `backend_version.txt` — Backend Version Tracking**
+
+This file stores the backend version.
+It helps confirm if the backend deployment on EC2 updated successfully.
+
+Download:
+
 ```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/backend_version.txt
 ```
 
+#### **3. `requirements.txt` — Python Dependencies**
+
+This file lists all Python libraries required for the backend, such as Flask.
+Jenkins installs these packages on the server using this file.
+
+Download:
+
 ```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/requirements.txt
 ```
+
+#### **4. `Jenkinsfile` — CI/CD Pipeline for Backend**
+
+This Jenkinsfile defines the backend continuous delivery process including:
+
+* Connecting to backend EC2 via SSH
+* Installing dependencies
+* Restarting the Flask app
+* Passing server IP as a parameter
+
+Download:
 
 ```bash
 wget https://raw.githubusercontent.com/shivalkarrahul/ci-cd-workshop/main/backend/Jenkinsfile
