@@ -947,11 +947,11 @@ For this workshop, we will create **public** repositories so Jenkins can easily 
 
 1. Open **CloudShell** from AWS Console:
 
-Important: Before proceeding, remember:
-
 The aim of the following steps is to clone your frontend and backend repositories, add the required workshop code and Jenkinsfiles that are provided in this main repository, and push them back to your GitHub repos.
 
 You can perform these steps from any machine, including your laptop. We use the build server here only for convenience.
+
+Important: Before connecting, ensure you're working from AWS CloudShell, not from the ci-cd-workshop-backend-server EC2 instance. If unsure, simply type exit to start a fresh CloudShell session.
 
 ```bash
 ssh -i ci-cd-workshop.pem ubuntu@<BUILD-SERVER-PUBLIC-IP>
@@ -1263,15 +1263,15 @@ If you are logged out, sign back in using:
   ```
 
 2. Go to **Manage Jenkins(Gear Icon in right top corner) → Credentials → System → Global credentials → Add Credentials**.
-3. Open `ci-cd-workshop.pem` in notepad/textpad on your local machine and copy the content
-4. Select:
+3. Select:
 
    * **Kind:** SSH Username with private key
    * **Scope:** Global
    * **ID:** `backend-server-ssh`
    * **Description:** SSH Key for backend-server deployment
    * **Username:** `ubuntu`
-   * **Private Key:** Enter directly → paste the content of `ci-cd-workshop.pem` you copied
+   * Open `ci-cd-workshop.pem` in notepad/textpad on your local machine and copy the content
+   * **Private Key:** Select **Enter directly** radio button →Click on **Add** button and paste the content of `ci-cd-workshop.pem` you copied
    
 5. Click **Create**.
 
@@ -1335,7 +1335,7 @@ We will create a **backend pipeline** that deploys the Python Flask app to the b
 
 We will make Jenkins automatically trigger pipelines on **GitHub push**.
 
-Repeat this for both the repos
+Repeat this for both the repos **ci-cd-workshop-backend** and **ci-cd-workshop-frontend**
 
 1. Open **GitHub → Repository → Settings → Webhooks → Add webhook**.
 2. Enter:
@@ -1363,6 +1363,10 @@ The purpose of the following steps is to make small changes to your **frontend**
 
 You can perform these changes from **any machine** (your laptop, CloudShell, or build server).
 Here we use the **build server** only for convenience.
+
+📌 Important:
+Before connecting, ensure you're working from AWS CloudShell, not from the ci-cd-workshop-backend-server EC2 instance.
+If unsure, simply type **exit** to start a fresh CloudShell session.
 
 
 #### **8.5.1. Modify the Frontend Repository**
@@ -1407,7 +1411,7 @@ Edit using:
 vim index.html
 ```
 
-Look for:
+Look for(on line number 98):
 
 ```js
 const API_BASE = "http://127.0.0.1:5000";
@@ -1433,7 +1437,7 @@ git add .
 ```
 
 ```bash
-git commit -m "Test frontend update"
+git commit -m "updates to deploy the frontend"
 ```
 
 ```bash
@@ -1514,7 +1518,7 @@ git add .
 ```
 
 ```bash
-git commit -m "Test backend update"
+git commit -m "updates to deploy the backend"
 ```
 
 ```bash
@@ -1588,10 +1592,10 @@ However, manual deletion is:
 * easy to miss resources
 * painful if you created many items
 
-So the script below is provided **only to save your time** and ensure everything is deleted cleanly.
+So the commands below are provided **only to save your time** and ensure everything is deleted cleanly.
 
-Now, go to AWS Console → Click CloudShell icon (top right)
-Then run the commands below.
+Before connecting, ensure you're working from AWS CloudShell, not from the ci-cd-workshop-build-server or ci-cd-workshop-backend-server EC2 instance.
+If unsure, simply type **exit** to start a fresh CloudShell session.
 
 ### 🚀 **9.1 Export Variables**
 
@@ -1602,10 +1606,16 @@ REGION="us-east-1"
 BUILD_SERVER_NAME="ci-cd-workshop-build-server"
 BUILD_SERVER_ROLE="ci-cd-workshop-build-server-role"
 BUILD_KEY_PAIR="ci-cd-workshop"
+```
 
+Note: `FRONTEND_BUCKET` with you Bucket Name
+
+```bash
 # Frontend S3 bucket
 FRONTEND_BUCKET="ci-cd-workshop-frontend-<your-name>"
+```
 
+```bash
 # Backend server
 BACKEND_SERVER_NAME="ci-cd-workshop-backend-server"
 BACKEND_SERVER_ROLE="ci-cd-workshop-backend-server-role"
@@ -1684,6 +1694,8 @@ aws ec2 terminate-instances \
     --region $REGION \
     --no-cli-pager
 ```
+
+Wait until the instances are fully terminated and the command finishes executing.
 
 ```bash
 aws ec2 wait instance-terminated \
@@ -1842,14 +1854,11 @@ aws iam delete-role \
     --role-name $BUILD_SERVER_ROLE \
     --no-cli-pager
 ```
-
-Here’s a clean, ready-to-add section explaining how to delete GitHub repositories from the GitHub console:
-
 ---
 
 ## **9.7. Delete GitHub Repositories**
 
-As you created the **frontend** and **backend** repositories only for this workshop, you can delete them from the **GitHub Console** if you want.
+As you created the **frontend** and **backend** repositories only for this workshop, you can delete them from the **GitHub Console** if you want to.
 
 #### **Steps to Delete a GitHub Repository**
 
