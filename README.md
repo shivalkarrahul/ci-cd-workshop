@@ -21,7 +21,7 @@ Before starting this workshop, ensure you have:
 
   * **AWS CloudShell**
   * **SSH** into EC2
-  * **GitHub fork, clone, and push operations**
+  * **GitHub clone, and push operations**
 
 ---
 
@@ -69,7 +69,6 @@ So **ensure AWS Console is always set to `us-east-1`**.
 
 This workshop implements a **3-tier architecture with CI/CD automation**:
 
-
 ### **Key Components**
 
 * **Build Server (EC2):** Runs Jenkins and automates deployments
@@ -79,6 +78,8 @@ This workshop implements a **3-tier architecture with CI/CD automation**:
 * **GitHub:** Single source of truth for both frontend & backend code
 
 You get a real, CI/CD workflow in a simplified, workshop-friendly environment.
+
+![CICD Workshop Architecture](artifacts/0-cicd_workshop_architecture.png)
 
 ---
 
