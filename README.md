@@ -3,7 +3,7 @@
 ![About Me ](artifacts/0-about-me.png)
 
 **Presenter:** Rahul Shivalkar  
-**Event:** SIES College, Nerul, Navi Mumbai, India 
+**Event:** SIES College, Nerul, Navi Mumbai, India  
 **Audience:** Faculties
 
 ## 📌 **Prerequisites**
@@ -98,7 +98,7 @@ In this lab, you will build an end-to-end CI/CD pipeline:
 * 1× **Build Server (EC2) running Jenkins**
 * 1× **Backend Server (EC2)**
 * 1× **Frontend S3 Static Website**
-* 1× **DynamoDB Table**
+* 2× **DynamoDB Table**
 * Required IAM roles, policies & permissions
 * 1× **Backend Github Repo**
 * 1× **Frontend Github Repo**
