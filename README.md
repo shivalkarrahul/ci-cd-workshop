@@ -1,5 +1,11 @@
 ## **ci-cd-workshop**
 
+![About Me ](artifacts/0-about-me.png)
+
+**Presenter:** Rahul Shivalkar  
+**Event:** SIES College, Nerul, Navi Mumbai, India 
+**Audience:** Faculties
+
 ## 📌 **Prerequisites**
 
 Before starting this workshop, ensure you have:
@@ -365,7 +371,7 @@ This sets secure permissions required by SSH.
 Now connect to your server:
 
 ```bash
-ssh -i ci-cd-workshop.pem ubuntu@<PUBLIC-IP>
+ssh -i ci-cd-workshop.pem ubuntu@<BUILD-SERVER-PUBLIC-IP>
 ```
 
 When asked:
@@ -579,7 +585,7 @@ To enable it, you must install the SSH Agent Plugin.
 Open your browser and visit:
 
 ```
-http://<public-ip>:8080
+http://<build-server-public-ip>:8080
 ```
 
 Replace `<public-ip>` with the public IP of the Build Server EC2 instance.
@@ -787,7 +793,7 @@ If unsure, simply type **exit** to start a fresh CloudShell session.
 Now connect to your server:
 
 ```bash
-ssh -i ci-cd-workshop.pem ubuntu@<PUBLIC-IP>
+ssh -i ci-cd-workshop.pem ubuntu@<BACKEND-SERVER-PUBLIC-IP>
 ```
 
 When asked:
@@ -1000,9 +1006,6 @@ git clone https://github.com/<your-username>/ci-cd-workshop-backend.git
 
 ![Clone Github Repos](artifacts/13-clone-repo.png)
 
-![Clone Output](artifacts/14-clone-output.png)
-
-
 ---
 
 ### **7.6. Download and Copy Workshop Files**
@@ -1207,6 +1210,8 @@ git push origin main
 
 1. Open the repositories in your GitHub account:
 
+Note: Replace `<your-username>` in the URL with your Github username
+
    * `https://github.com/<your-username>/ci-cd-workshop-frontend`
 ![Changes in Fronend Repo](artifacts/15.2-changes-in-frontend-repo.png)
 
@@ -1341,6 +1346,7 @@ Repeat this for both the repos **ci-cd-workshop-backend** and **ci-cd-workshop-f
 1. Open **GitHub → Repository → Settings → Webhooks → Add webhook**.
 2. Enter:
 
+Note: Replace `<build-server-public-ip>` with your build server's public IP
    * **Payload URL:**
 
      ```
@@ -1418,7 +1424,7 @@ Look for(on line number 98):
 const API_BASE = "http://127.0.0.1:5000";
 ```
 
-Replace with:
+Replace with(`<your-backend-server-public-ip> change this to your Backend Server Public IP `):
 
 ```js
 const API_BASE = "http://<your-backend-server-public-ip>:5000";
